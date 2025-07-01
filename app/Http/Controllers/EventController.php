@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Event;
+use Illuminate\Http\Request;
+
+class EventController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $events = Event::latest()->get();
+        return view('event.index', compact('events'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('event.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'tanggal' => 'required|date',
+            'waktu' => 'required',
+            'tempat' => 'required',
+            'deskripsi' => 'nullable',
+        ]);
+
+        Event::create($request->all());
+
+        return redirect()->route('event.manage')->with('success', 'Event berhasil ditambahkan.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Event $event)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Event $event)
+    {
+        return view('event.edit', compact('event'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Event $event)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'tanggal' => 'required',
+            'waktu' => 'required',
+            'tempat' => 'required',
+            'deskripsi' => 'nullable',
+        ]);
+
+        $event->update($request->all());
+
+        return redirect()->route('event.manage')->with('success', 'Event berhasil diubah.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Event $event)
+    {
+        $event->delete();
+        return back()->with('success', 'Event berhasil dihapus.');
+    }
+
+    public function manage()
+    {
+        $events = Event::latest()->paginate(10); // pakai pagination biar rapi
+        return view('event.manage', compact('events'));
+    }
+    
+}
