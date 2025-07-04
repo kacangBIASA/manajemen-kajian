@@ -35,6 +35,8 @@ class EventController extends Controller
             'waktu' => 'required',
             'tempat' => 'required',
             'deskripsi' => 'nullable',
+            'metode_pembayaran' => 'required|in:Gratis,Berbayar',
+            'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
         ]);
 
         Event::create($request->all());
@@ -79,7 +81,7 @@ class EventController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Event $event)
+   public function destroy(Event $event)
     {
         $event->delete();
         return back()->with('success', 'Event berhasil dihapus.');
@@ -90,5 +92,18 @@ class EventController extends Controller
         $events = Event::latest()->paginate(10); // pakai pagination biar rapi
         return view('event.manage', compact('events'));
     }
+
+    public function publicIndex()
+    {
+        $events = Event::orderBy('tanggal')->get();
+        return view('public.dashboard', compact('events'));
+    }
+
+    public function showForm($id)
+    {
+        $event = Event::findOrFail($id);
+        return view('public.form', compact('event'));
+    }
+
     
 }
