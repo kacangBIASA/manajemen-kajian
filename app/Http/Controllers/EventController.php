@@ -142,7 +142,7 @@ class EventController extends Controller
             'no_hp' => $validatedData['no_hp'],
             'email' => $validatedData['email'],
             'kode_qr' => $kodeQR,
-            'bukti_pembayaran' => $buktiPath, // simpan path bukti jika ada
+            'bukti_pembayaran' => $buktiPath,
         ]);
 
         return view('public.qr', compact('event', 'pendaftar'));
