@@ -1,39 +1,69 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Scan QR Code
+            {{ __('Scan QR Code') }}
         </h2>
     </x-slot>
 
-    <div class="max-w-2xl mx-auto py-10">
-        @if(session('success'))
-            <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
-                {{ session('error') }}
-            </div>
-        @endif
+    <div class="max-w-xl mx-auto p-6 bg-white shadow rounded mt-6">
+        <h2 class="text-lg font-semibold text-green-700 mb-4">Scan QR Code dengan Kamera</h2>
 
-        <form action="{{ route('event.scan.process') }}" method="POST" class="bg-white p-6 rounded shadow">
-            @csrf
-            <div class="mb-4">
-                <label class="block text-sm font-medium">Masukkan QR Code</label>
-                <input type="text" name="qr_code" class="w-full mt-1 rounded border-gray-300" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium">Pilih Event</label>
-                <select name="event_id" class="w-full mt-1 rounded border-gray-300">
-                    @foreach($events as $event)
-                        <option value="{{ $event->id }}">{{ $event->nama }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
-                Scan
-            </button>
-        </form>
+        <div id="result-message" class="hidden p-3 rounded mb-4 text-sm font-semibold"></div>
+
+        <div id="reader" style="width: 100%;"></div>
     </div>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script>
+        const scanner = new Html5Qrcode("reader");
+
+        function showMessage(type, message) {
+            const el = document.getElementById('result-message');
+            el.classList.remove('hidden', 'bg-green-100', 'bg-red-100', 'bg-yellow-100', 'text-green-700', 'text-red-700', 'text-yellow-700');
+
+            if (type === 'success') {
+                el.classList.add('bg-green-100', 'text-green-700');
+            } else if (type === 'error') {
+                el.classList.add('bg-red-100', 'text-red-700');
+            } else {
+                el.classList.add('bg-yellow-100', 'text-yellow-700');
+            }
+
+            el.innerText = message;
+
+            setTimeout(() => {
+                el.classList.add('hidden');
+            }, 3000); // auto-hide in 3 sec
+        }
+
+        function sendScanResult(kodeQR) {
+            fetch("{{ route('event.scan.check') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ kode_qr: kodeQR })
+            })
+            .then(res => res.json())
+            .then(data => {
+                showMessage(data.status, data.message);
+            })
+            .catch(() => {
+                showMessage('error', 'Terjadi kesalahan sistem.');
+            });
+        }
+
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras.length) {
+                scanner.start(
+                    cameras[0].id,
+                    { fps: 10, qrbox: 250 },
+                    qrCodeMessage => {
+                        sendScanResult(qrCodeMessage);
+                    }
+                );
+            }
+        });
+    </script>
 </x-app-layout>

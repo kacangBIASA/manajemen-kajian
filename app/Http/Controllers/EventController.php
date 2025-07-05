@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -81,7 +82,7 @@ class EventController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-   public function destroy(Event $event)
+    public function destroy(Event $event)
     {
         $event->delete();
         return back()->with('success', 'Event berhasil dihapus.');
@@ -105,5 +106,45 @@ class EventController extends Controller
         return view('public.form', compact('event'));
     }
 
-    
+    public function submitForm(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+
+        // Atur validasi dasar
+        $rules = [
+            'nama' => 'required|string|max:255',
+            'alamat' => 'required|string',
+            'no_hp' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+        ];
+
+        // Jika event berbayar, tambahkan validasi file bukti pembayaran
+        if ($event->metode_pembayaran === 'Berbayar') {
+            $rules['bukti_pembayaran'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        }
+
+        $validatedData = $request->validate($rules);
+
+        // Proses upload file jika event berbayar
+        $buktiPath = null;
+        if ($event->metode_pembayaran === 'Berbayar' && $request->hasFile('bukti_pembayaran')) {
+            $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
+        }
+
+        // Generate kode QR unik
+        $kodeQR = 'QR-' . uniqid() . '-' . $event->id;
+
+        // Simpan pendaftaran
+        $pendaftar = Pendaftaran::create([
+            'event_id' => $event->id,
+            'nama' => $validatedData['nama'],
+            'alamat' => $validatedData['alamat'],
+            'no_hp' => $validatedData['no_hp'],
+            'email' => $validatedData['email'],
+            'kode_qr' => $kodeQR,
+            'bukti_pembayaran' => $buktiPath, // simpan path bukti jika ada
+        ]);
+
+        return view('public.qr', compact('event', 'pendaftar'));
+    }
 }

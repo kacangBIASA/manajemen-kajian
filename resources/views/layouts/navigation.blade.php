@@ -20,9 +20,9 @@
                     <x-nav-link :href="route('event.manage')" :active="request()->routeIs('event.manage')" class="text-white hover:underline">
                         Kelola
                     </x-nav-link>
-                    {{-- <x-nav-link :href="route('event.scan')" :active="request()->routeIs('event.scan')" class="text-white hover:underline">
+                    <x-nav-link :href="route('event.scan')" :active="request()->routeIs('event.scan')" class="text-white hover:underline">
                         Scan
-                    </x-nav-link> --}}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -58,7 +58,7 @@
         <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">Dashboard</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('event.create')" :active="request()->routeIs('event.create')">Tambah Event</x-responsive-nav-link>
         <x-responsive-nav-link :href="route('event.manage')" :active="request()->routeIs('event.manage')">Kelola</x-responsive-nav-link>
-        {{-- <x-responsive-nav-link :href="route('event.scan')" :active="request()->routeIs('event.scan')">Scan</x-responsive-nav-link> --}}
+        <x-responsive-nav-link :href="route('event.scan')" :active="request()->routeIs('event.scan')">Scan</x-responsive-nav-link>
 
         <!-- Mobile User Info -->
         <div class="border-t border-green-500 pt-3">

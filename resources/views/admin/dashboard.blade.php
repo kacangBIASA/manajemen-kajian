@@ -33,7 +33,7 @@
                 </a>
 
                 <!-- Scan Absensi -->
-                <a href=""
+                <a href="{{route('event.scan')}}"
                    class="bg-white border border-green-300 hover:border-green-500 shadow-md rounded-lg p-6 flex flex-col items-center text-center hover:shadow-lg transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
