@@ -9,7 +9,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-green-50 font-sans text-gray-800 flex flex-col min-h-screen">
+<body class="bg-gradient-to-b from-green-100 to-green-400 font-sans text-gray-800 flex flex-col min-h-screen">
 
     <!-- Navbar -->
     <nav class="bg-green-700 text-white px-6 py-4 shadow-md">
@@ -19,7 +19,7 @@
                 <span class="ml-2 font-semibold text-xl">Sistem Kajian</span>
             </a>
             <div>
-                <a href="{{ route('dashboard.kajian') }}" class="text-sm hover:underline">Home</a>
+                <a href="{{ route('dashboard.kajian') }}" class="text-white hover:underline">Home</a>
             </div>
         </div>
     </nav>

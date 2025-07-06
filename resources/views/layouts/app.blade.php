@@ -27,7 +27,7 @@
         @endif
 
         <!-- Main Content -->
-        <main class="flex-grow py-6">
+        <main class="bg-gradient-to-b from-green-100 to-green-400 flex-grow py-6">
             {{ $slot }}
         </main>
 
