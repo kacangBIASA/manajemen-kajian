@@ -51,5 +51,7 @@ Route::post('/kajian/{id}/daftar', [EventController::class, 'submitForm'])->name
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/scan', [App\Http\Controllers\ScanController::class, 'index'])->name('event.scan');
-    Route::post('/scan/check', [App\Http\Controllers\ScanController::class, 'check'])->name('event.scan.check');
+    Route::post('/scan/check', [App\Http\Controllers\ScanController::class, 'check'])
+        ->middleware('throttle:60,1')
+        ->name('event.scan.check');
 });

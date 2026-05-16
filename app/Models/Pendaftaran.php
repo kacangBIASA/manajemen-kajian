@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Pendaftaran extends Model
 {
     use HasFactory;
+
+    public const STATUS_HADIR = 'Hadir';
+
     protected $fillable = [
         'event_id',
         'nama',
@@ -16,6 +19,7 @@ class Pendaftaran extends Model
         'email',
         'kode_qr',
         'bukti_pembayaran',
+        'status',
     ];
 
     public function event()

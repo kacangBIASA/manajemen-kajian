@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -30,27 +31,19 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required',
             'tanggal' => 'required|date',
             'waktu' => 'required',
             'tempat' => 'required',
             'deskripsi' => 'nullable',
-            'metode_pembayaran' => 'required|in:Gratis,Berbayar',
-            'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
+            'metode_pembayaran' => 'required|in:' . Event::METODE_GRATIS . ',' . Event::METODE_BERBAYAR,
+            'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,' . Event::METODE_BERBAYAR,
         ]);
 
-        Event::create($request->all());
+        Event::create($validated);
 
         return redirect()->route('event.manage')->with('success', 'Event berhasil ditambahkan.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Event $event)
-    {
-        //
     }
 
     /**
@@ -66,15 +59,17 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required',
-            'tanggal' => 'required',
+            'tanggal' => 'required|date',
             'waktu' => 'required',
             'tempat' => 'required',
             'deskripsi' => 'nullable',
+            'metode_pembayaran' => 'required|in:' . Event::METODE_GRATIS . ',' . Event::METODE_BERBAYAR,
+            'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,' . Event::METODE_BERBAYAR,
         ]);
 
-        $event->update($request->all());
+        $event->update($validated);
 
         return redirect()->route('event.manage')->with('success', 'Event berhasil diubah.');
     }
@@ -119,31 +114,33 @@ class EventController extends Controller
         ];
 
         // Jika event berbayar, tambahkan validasi file bukti pembayaran
-        if ($event->metode_pembayaran === 'Berbayar') {
+        if ($event->metode_pembayaran === Event::METODE_BERBAYAR) {
             $rules['bukti_pembayaran'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
         $validatedData = $request->validate($rules);
 
-        // Proses upload file jika event berbayar
-        $buktiPath = null;
-        if ($event->metode_pembayaran === 'Berbayar' && $request->hasFile('bukti_pembayaran')) {
-            $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
-        }
+        $pendaftar = DB::transaction(function () use ($request, $event, $validatedData) {
+            // Proses upload file jika event berbayar
+            $buktiPath = null;
+            if ($event->metode_pembayaran === Event::METODE_BERBAYAR && $request->hasFile('bukti_pembayaran')) {
+                $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
+            }
 
-        // Generate kode QR unik
-        $kodeQR = 'QR-' . uniqid() . '-' . $event->id;
+            // Generate kode QR unik
+            $kodeQR = 'QR-' . uniqid() . '-' . $event->id;
 
-        // Simpan pendaftaran
-        $pendaftar = Pendaftaran::create([
-            'event_id' => $event->id,
-            'nama' => $validatedData['nama'],
-            'alamat' => $validatedData['alamat'],
-            'no_hp' => $validatedData['no_hp'],
-            'email' => $validatedData['email'],
-            'kode_qr' => $kodeQR,
-            'bukti_pembayaran' => $buktiPath,
-        ]);
+            // Simpan pendaftaran
+            return Pendaftaran::create([
+                'event_id' => $event->id,
+                'nama' => $validatedData['nama'],
+                'alamat' => $validatedData['alamat'],
+                'no_hp' => $validatedData['no_hp'],
+                'email' => $validatedData['email'],
+                'kode_qr' => $kodeQR,
+                'bukti_pembayaran' => $buktiPath,
+            ]);
+        });
 
         return view('public.qr', compact('event', 'pendaftar'));
     }

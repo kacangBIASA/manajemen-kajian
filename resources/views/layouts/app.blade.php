@@ -7,32 +7,33 @@
     <title>{{ config('app.name', 'Sistem Kajian') }}</title>
 
     <!-- Fonts -->
-    <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900&display=swap" rel="stylesheet" />
 
     <!-- Tailwind -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-green-50 text-gray-800">
+<body class="font-sans antialiased bg-slate-50 text-slate-800">
     <div class="min-h-screen flex flex-col">
         <!-- Navbar -->
         @include('layouts.navigation')
 
         <!-- Page Header -->
         @if (isset($header))
-            <header class="bg-white shadow mt-2">
-                <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <header class="bg-white border-b border-slate-100 shadow-sm relative z-10">
+                <div class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
             </header>
         @endif
 
         <!-- Main Content -->
-        <main class="bg-gradient-to-b from-green-100 to-green-400 flex-grow py-6">
+        <main class="flex-grow">
             {{ $slot }}
         </main>
 
         <!-- Footer -->
-        <footer class="bg-green-700 text-white text-center py-3 text-sm">
+        <footer class="bg-slate-900 text-slate-400 text-center py-6 text-sm font-medium border-t border-slate-800 mt-auto">
             © {{ date('Y') }} Sistem Manajemen Kajian – All rights reserved.
         </footer>
     </div>

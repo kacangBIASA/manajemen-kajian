@@ -27,14 +27,14 @@ class ScanController extends Controller
             ]);
         }
 
-        if ($pendaftar->status === 'Hadir') {
+        if ($pendaftar->status === Pendaftaran::STATUS_HADIR) {
             return response()->json([
                 'status' => 'info',
                 'message' => 'Peserta sudah absen sebelumnya: ' . $pendaftar->nama
             ]);
         }
 
-        $pendaftar->status = 'Hadir';
+        $pendaftar->status = Pendaftaran::STATUS_HADIR;
         $pendaftar->save();
 
         return response()->json([
