@@ -124,7 +124,8 @@ class EventController extends Controller
             // Proses upload file jika event berbayar
             $buktiPath = null;
             if ($event->metode_pembayaran === Event::METODE_BERBAYAR && $request->hasFile('bukti_pembayaran')) {
-                $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
+                // Gunakan disk bawaan (S3 saat di Vercel, public saat di lokal)
+                $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', config('filesystems.default', 'public'));
             }
 
             // Generate kode QR unik
