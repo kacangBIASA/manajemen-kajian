@@ -30,6 +30,7 @@
                 <!-- Desktop Menu -->
                 <div class="hidden sm:flex items-center gap-4">
                     <a href="{{ route('dashboard.kajian') }}" class="text-sm font-semibold text-slate-600 hover:text-emerald-600 transition-colors">Beranda</a>
+                    <a href="{{ route('tiket.cari') }}" class="text-sm font-semibold text-slate-600 hover:text-emerald-600 transition-colors">Tiket Saya</a>
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="text-sm font-semibold px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors">Dashboard Admin</a>
                     @else
@@ -57,6 +58,9 @@
             <div class="px-4 pt-2 pb-4 space-y-2">
                 <a href="{{ route('dashboard.kajian') }}" class="block px-4 py-3 rounded-lg text-sm font-semibold text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                     Beranda
+                </a>
+                <a href="{{ route('tiket.cari') }}" class="block px-4 py-3 rounded-lg text-sm font-semibold text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                    Tiket Saya
                 </a>
                 @auth
                     <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 rounded-lg text-sm font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors">

@@ -145,4 +145,30 @@ class EventController extends Controller
 
         return view('public.qr', compact('event', 'pendaftar'));
     }
+
+    public function cariTiketForm()
+    {
+        return view('public.cari-tiket');
+    }
+
+    public function cariTiketSubmit(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.'
+        ]);
+
+        $pendaftarans = Pendaftaran::with('event')->where('email', $request->email)->get();
+
+        return view('public.cari-tiket', compact('pendaftarans'));
+    }
+
+    public function showTiket($kode_qr)
+    {
+        $pendaftar = Pendaftaran::where('kode_qr', $kode_qr)->firstOrFail();
+        $event = $pendaftar->event;
+        return view('public.qr', compact('event', 'pendaftar'));
+    }
 }
