@@ -8,6 +8,9 @@
         @foreach ($events as $event)
             <div class="bg-white p-4 shadow rounded-lg">
                 <h2 class="text-xl font-semibold">{{ $event->nama }}</h2>
+                @if ($event->pemateri)
+                    <p class="text-sm font-medium text-green-700">Bersama: {{ $event->pemateri }}</p>
+                @endif
                 <p class="text-sm text-gray-600">{{ $event->tanggal }} - {{ $event->waktu }}</p>
                 <p class="text-sm text-gray-600">Tempat: {{ $event->tempat }}</p>
 

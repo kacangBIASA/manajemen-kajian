@@ -15,6 +15,9 @@
         <h3 class="text-lg font-semibold mb-4 text-green-700">{{ $event->nama }}</h3>
         <div class="mb-6 p-4 bg-gray-100 border-l-4 border-green-500">
             <h2 class="text-lg font-semibold">{{ $event->nama }}</h2>
+            @if ($event->pemateri)
+                <p class="text-sm font-medium text-green-700">Bersama: {{ $event->pemateri }}</p>
+            @endif
             <p class="text-sm text-gray-700">Tanggal: {{ $event->tanggal }} | Waktu: {{ $event->waktu }}</p>
             <p class="text-sm text-gray-700">Tempat: {{ $event->tempat }}</p>
             <p class="text-sm mt-2 text-green-700 font-medium">

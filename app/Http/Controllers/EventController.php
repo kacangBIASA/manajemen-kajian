@@ -32,6 +32,7 @@ class EventController extends Controller
     {
         $request->validate([
             'nama' => 'required',
+            'pemateri' => 'nullable|string|max:255',
             'tanggal' => 'required|date',
             'waktu' => 'required',
             'tempat' => 'required',
@@ -75,6 +76,7 @@ class EventController extends Controller
     {
         $request->validate([
             'nama' => 'required',
+            'pemateri' => 'nullable|string|max:255',
             'tanggal' => 'required',
             'waktu' => 'required',
             'tempat' => 'required',

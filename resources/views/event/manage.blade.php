@@ -17,22 +17,25 @@
                 <thead>
                     <tr class="border-b font-semibold text-gray-700">
                         <th class="pb-2">Nama</th>
+                        <th class="pb-2">Pemateri</th>
                         <th class="pb-2">Tanggal</th>
                         <th class="pb-2">Waktu</th>
                         <th class="pb-2">Tempat</th>
-                        <th class="pb-2">Aksi</th>
+                        <th class="pb-2">Metode</th>
                         <th class="pb-2">Harga</th>
+                        <th class="pb-2">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($events as $event)
                         <tr class="border-b hover:bg-gray-50">
                             <td class="py-2">{{ $event->nama }}</td>
+                            <td class="py-2">{{ $event->pemateri ?? '-' }}</td>
                             <td class="py-2">{{ $event->tanggal }}</td>
                             <td class="py-2">{{ $event->waktu }}</td>
                             <td class="py-2">{{ $event->tempat }}</td>
-                            <td>{{ $event->metode_pembayaran }}</td>
-                            <td>
+                            <td class="py-2">{{ $event->metode_pembayaran }}</td>
+                            <td class="py-2">
                                 @if ($event->metode_pembayaran === 'Berbayar')
                                     Rp{{ number_format($event->harga, 0, ',', '.') }}
                                 @else

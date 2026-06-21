@@ -16,6 +16,11 @@
                         class="w-full mt-1 rounded border-gray-300" required>
                 </div>
                 <div class="mb-4">
+                    <label class="block text-sm font-medium">Pemateri</label>
+                    <input type="text" name="pemateri" value="{{ $event->pemateri }}"
+                        class="w-full mt-1 rounded border-gray-300" placeholder="Contoh: Ustadz Ahmad Zainuddin">
+                </div>
+                <div class="mb-4">
                     <label class="block text-sm font-medium">Tanggal</label>
                     <input type="date" name="tanggal" value="{{ $event->tanggal }}"
                         class="w-full mt-1 rounded border-gray-300" required>
