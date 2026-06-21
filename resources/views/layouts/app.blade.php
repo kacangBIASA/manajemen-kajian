@@ -9,8 +9,11 @@
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
 
-    <!-- Tailwind -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="font-sans antialiased bg-green-50 text-gray-800">
     <div class="min-h-screen flex flex-col">
