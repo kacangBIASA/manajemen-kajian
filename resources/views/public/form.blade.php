@@ -6,6 +6,12 @@
     <h2 class="text-2xl font-bold mb-6 text-green-800 text-center">Form Pendaftaran</h2>
 
     <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow border border-green-100">
+
+        @if ($event->flyer)
+            <img src="{{ asset('storage/' . $event->flyer) }}" alt="Flyer {{ $event->nama }}"
+                class="w-full rounded-lg mb-6 shadow-md object-cover">
+        @endif
+
         <h3 class="text-lg font-semibold mb-4 text-green-700">{{ $event->nama }}</h3>
         <div class="mb-6 p-4 bg-gray-100 border-l-4 border-green-500">
             <h2 class="text-lg font-semibold">{{ $event->nama }}</h2>

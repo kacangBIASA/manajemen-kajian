@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="max-w-2xl mx-auto py-10">
-        <form action="{{ route('event.store') }}" method="POST" class="bg-white p-6 rounded shadow">
+        <form action="{{ route('event.store') }}" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded shadow">
             @csrf
             <div class="mb-4">
                 <label class="block text-sm font-medium">Nama Kajian</label>
@@ -57,6 +57,12 @@
                     });
                 });
             </script>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Flyer / Poster Kajian</label>
+                <input type="file" name="flyer" accept="image/*"
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, WEBP. Maks 2MB.</p>
+            </div>
             <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
                 Simpan
             </button>

@@ -38,9 +38,16 @@ class EventController extends Controller
             'deskripsi' => 'nullable',
             'metode_pembayaran' => 'required|in:Gratis,Berbayar',
             'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
+            'flyer' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        Event::create($request->all());
+        $data = $request->except('flyer');
+
+        if ($request->hasFile('flyer')) {
+            $data['flyer'] = $request->file('flyer')->store('flyer', 'public');
+        }
+
+        Event::create($data);
 
         return redirect()->route('event.manage')->with('success', 'Event berhasil ditambahkan.');
     }
@@ -72,9 +79,21 @@ class EventController extends Controller
             'waktu' => 'required',
             'tempat' => 'required',
             'deskripsi' => 'nullable',
+            'metode_pembayaran' => 'required|in:Gratis,Berbayar',
+            'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
+            'flyer' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $event->update($request->all());
+        $data = $request->except('flyer');
+
+        if ($request->hasFile('flyer')) {
+            if ($event->flyer) {
+                \Storage::disk('public')->delete($event->flyer);
+            }
+            $data['flyer'] = $request->file('flyer')->store('flyer', 'public');
+        }
+
+        $event->update($data);
 
         return redirect()->route('event.manage')->with('success', 'Event berhasil diubah.');
     }

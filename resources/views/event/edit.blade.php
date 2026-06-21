@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-            <form action="{{ route('event.update', $event->id) }}" method="POST">
+            <form action="{{ route('event.update', $event->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="mb-4">
@@ -64,6 +64,19 @@
                         });
                     });
                 </script>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Flyer / Poster Kajian</label>
+                    @if ($event->flyer)
+                        <div class="mb-2">
+                            <img src="{{ asset('storage/' . $event->flyer) }}" alt="Flyer saat ini"
+                                class="w-40 rounded shadow border">
+                            <p class="text-xs text-gray-400 mt-1">Flyer saat ini. Upload baru untuk mengganti.</p>
+                        </div>
+                    @endif
+                    <input type="file" name="flyer" accept="image/*"
+                        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                    <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, WEBP. Maks 2MB.</p>
+                </div>
                 <button type="submit" class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800">
                     Update
                 </button>
