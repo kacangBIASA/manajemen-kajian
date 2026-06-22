@@ -17,7 +17,7 @@
             </div>
 
             {{-- Area kamera --}}
-            <div id="reader" class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 hidden" style="width: 100%;"></div>
+            <div id="reader" class="rounded-lg border border-gray-200 dark:border-gray-700 hidden" style="width: 100%; min-height: 300px;"></div>
 
             {{-- Status indicator --}}
             <div id="status-indicator" class="hidden mt-4 flex items-center justify-center gap-2 text-sm text-green-600 dark:text-green-400">
