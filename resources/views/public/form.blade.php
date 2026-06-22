@@ -45,6 +45,12 @@
                     </div>
                 </div>
 
+                @if (session('error'))
+                    <div class="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <form action="{{ route('pendaftaran.submit', $event->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
 

@@ -164,8 +164,8 @@ class EventController extends Controller
             ->first();
 
         if ($existing) {
-            return redirect()->route('tiket.show', $existing->kode_qr)
-                ->with('info', 'Kamu sudah terdaftar sebelumnya di kajian ini.');
+            return redirect()->route('pendaftaran.form', $event->id)
+                ->with('error', 'Nomor HP ini sudah terdaftar atas nama "' . $existing->nama . '" di kajian ini. Gunakan nomor HP lain untuk mendaftar.');
         }
 
         $buktiPath = null;
