@@ -40,6 +40,20 @@
         </button>
     </div>
 
+    <style>
+        #reader video {
+            width: 100% !important;
+            height: auto !important;
+            border-radius: 8px;
+        }
+        #reader__scan_region {
+            background: transparent !important;
+        }
+        #reader__dashboard {
+            display: none !important;
+        }
+    </style>
+
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -63,7 +77,7 @@
                 }
                 scanner.start(
                     cameras[0].id,
-                    { fps: 10, qrbox: 250 },
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
                     qrCodeMessage => { sendScanResult(qrCodeMessage); }
                 ).then(() => {
                     cameraOn = true;
@@ -75,6 +89,8 @@
                     document.getElementById('btn-icon-off').classList.remove('hidden');
                     document.getElementById('toggle-btn').classList.replace('bg-green-600', 'bg-red-500');
                     document.getElementById('toggle-btn').classList.replace('hover:bg-green-700', 'hover:bg-red-600');
+                }).catch(err => {
+                    Swal.fire({ icon: 'error', title: 'Gagal mengakses kamera', text: 'Pastikan izin kamera sudah diberikan.', confirmButtonColor: '#16a34a' });
                 });
             }).catch(() => {
                 Swal.fire({ icon: 'error', title: 'Gagal mengakses kamera', text: 'Pastikan izin kamera sudah diberikan.', confirmButtonColor: '#16a34a' });
