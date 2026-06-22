@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/', [EventController::class, 'publicIndex'])->name('dashboard.kajian');
 Route::get('/kajian/{id}/daftar', [EventController::class, 'showForm'])->name('pendaftaran.form');
 Route::post('/kajian/{id}/daftar', [EventController::class, 'submitForm'])->name('pendaftaran.submit');
+Route::get('/tiket/{kode}', [EventController::class, 'showTicket'])->name('tiket.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/scan', [App\Http\Controllers\ScanController::class, 'index'])->name('event.scan');

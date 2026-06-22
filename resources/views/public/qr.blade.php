@@ -4,6 +4,12 @@
 
 @section('content')
     <div class="max-w-sm mx-auto">
+        @if (session('info'))
+            <div class="mb-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400 px-4 py-3 rounded-lg text-sm text-center">
+                {{ session('info') }}
+            </div>
+        @endif
+
         <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-8 text-center">
             <div class="mb-5">
                 <div class="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -11,7 +17,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Pendaftaran Berhasil!</h2>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+                    {{ session('info') ? 'Tiket Kamu' : 'Pendaftaran Berhasil!' }}
+                </h2>
                 <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Atas nama</p>
                 <p class="text-lg font-semibold text-green-700 dark:text-green-400 mt-0.5">{{ $pendaftar->nama }}</p>
             </div>

@@ -143,7 +143,6 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        // Atur validasi dasar
         $rules = [
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string',
@@ -159,6 +158,16 @@ class EventController extends Controller
 
         $validatedData = $request->validate($rules);
 
+        // Cegah duplikat: no_hp yang sama untuk event yang sama → redirect ke tiket lama
+        $existing = Pendaftaran::where('event_id', $event->id)
+            ->where('no_hp', $validatedData['no_hp'])
+            ->first();
+
+        if ($existing) {
+            return redirect()->route('tiket.show', $existing->kode_qr)
+                ->with('info', 'Kamu sudah terdaftar sebelumnya di kajian ini.');
+        }
+
         $buktiPath = null;
         if ($event->metode_pembayaran === 'Berbayar' && $request->hasFile('bukti_pembayaran')) {
             $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
@@ -169,7 +178,7 @@ class EventController extends Controller
             $buktiInfaqPath = $request->file('bukti_infaq')->store('bukti_infaq', 'public');
         }
 
-        $kodeQR = 'QR-' . uniqid() . '-' . $event->id;
+        $kodeQR = 'QR-' . strtoupper(substr(md5($validatedData['no_hp'] . $event->id), 0, 8)) . '-' . $event->id;
 
         $pendaftar = Pendaftaran::create([
             'event_id' => $event->id,
@@ -183,6 +192,13 @@ class EventController extends Controller
             'motivasi_kajian' => $request->motivasi_kajian ?? null,
         ]);
 
+        return redirect()->route('tiket.show', $pendaftar->kode_qr);
+    }
+
+    public function showTicket($kode)
+    {
+        $pendaftar = Pendaftaran::where('kode_qr', $kode)->firstOrFail();
+        $event = $pendaftar->event;
         return view('public.qr', compact('event', 'pendaftar'));
     }
 }
