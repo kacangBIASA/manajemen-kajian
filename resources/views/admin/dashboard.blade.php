@@ -6,8 +6,8 @@
     <div class="max-w-7xl mx-auto px-4 py-8">
         <div class="text-center mb-10">
             <img src="https://img.icons8.com/color/96/mosque.png" class="mx-auto mb-4 h-16 w-16" alt="Logo">
-            <h1 class="text-3xl font-bold text-green-700 dark:text-green-400 tracking-tight">TAKHOBAR</h1>
-            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Tata Acara Kajian & Halaqah Online Berbasis Absensi & Registrasi</p>
+            <h1 class="text-3xl font-bold text-green-700 dark:text-green-400 tracking-tight">Tadzkirah</h1>
+            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Pengingat Kajian untuk Umat</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

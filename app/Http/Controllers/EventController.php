@@ -33,6 +33,7 @@ class EventController extends Controller
         $request->validate([
             'nama' => 'required',
             'pemateri' => 'nullable|string|max:255',
+            'moderator' => 'nullable|string|max:255',
             'tanggal' => 'required|date',
             'waktu' => 'required',
             'tempat' => 'required',
@@ -77,6 +78,7 @@ class EventController extends Controller
         $request->validate([
             'nama' => 'required',
             'pemateri' => 'nullable|string|max:255',
+            'moderator' => 'nullable|string|max:255',
             'tanggal' => 'required',
             'waktu' => 'required',
             'tempat' => 'required',
@@ -115,6 +117,16 @@ class EventController extends Controller
         return view('event.manage', compact('events'));
     }
 
+    public function detail($id)
+    {
+        $event = Event::with('pendaftarans')->findOrFail($id);
+        $peserta = $event->pendaftarans()->latest()->get();
+        $totalHadir = $peserta->where('status', 'Hadir')->count();
+        $totalBelum = $peserta->where('status', 'Belum Hadir')->count();
+        $totalInfaq = $peserta->sum('infaq_nominal');
+        return view('event.detail', compact('event', 'peserta', 'totalHadir', 'totalBelum', 'totalInfaq'));
+    }
+
     public function publicIndex()
     {
         $events = Event::orderBy('tanggal')->get();
@@ -136,34 +148,39 @@ class EventController extends Controller
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string',
             'no_hp' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
+            'infaq_nominal' => 'nullable|integer|min:0',
+            'bukti_infaq' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'motivasi_kajian' => 'nullable|string',
         ];
 
-        // Jika event berbayar, tambahkan validasi file bukti pembayaran
         if ($event->metode_pembayaran === 'Berbayar') {
             $rules['bukti_pembayaran'] = 'required|file|mimes:jpg,jpeg,png,pdf|max:2048';
         }
 
         $validatedData = $request->validate($rules);
 
-        // Proses upload file jika event berbayar
         $buktiPath = null;
         if ($event->metode_pembayaran === 'Berbayar' && $request->hasFile('bukti_pembayaran')) {
             $buktiPath = $request->file('bukti_pembayaran')->store('bukti_pembayaran', 'public');
         }
 
-        // Generate kode QR unik
+        $buktiInfaqPath = null;
+        if ($request->hasFile('bukti_infaq')) {
+            $buktiInfaqPath = $request->file('bukti_infaq')->store('bukti_infaq', 'public');
+        }
+
         $kodeQR = 'QR-' . uniqid() . '-' . $event->id;
 
-        // Simpan pendaftaran
         $pendaftar = Pendaftaran::create([
             'event_id' => $event->id,
             'nama' => $validatedData['nama'],
             'alamat' => $validatedData['alamat'],
             'no_hp' => $validatedData['no_hp'],
-            'email' => $validatedData['email'],
             'kode_qr' => $kodeQR,
-            'bukti_pembayaran' => $buktiPath, // simpan path bukti jika ada
+            'bukti_pembayaran' => $buktiPath,
+            'infaq_nominal' => $request->infaq_nominal ?? null,
+            'bukti_infaq' => $buktiInfaqPath,
+            'motivasi_kajian' => $request->motivasi_kajian ?? null,
         ]);
 
         return view('public.qr', compact('event', 'pendaftar'));

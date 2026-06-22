@@ -3,6 +3,10 @@
         <h2 class="font-semibold text-lg text-gray-800 dark:text-gray-100">Edit Event Kajian</h2>
     </x-slot>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+
     <div class="max-w-2xl mx-auto px-4 py-8">
         <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-6">
             <form action="{{ route('event.update', $event->id) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
@@ -15,23 +19,29 @@
                         class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pemateri</label>
-                    <input type="text" name="pemateri" value="{{ $event->pemateri }}"
-                        placeholder="Contoh: Ustadz Ahmad Zainuddin"
-                        class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pemateri</label>
+                        <input type="text" name="pemateri" value="{{ $event->pemateri }}" placeholder="Nama pemateri"
+                            class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Moderator</label>
+                        <input type="text" name="moderator" value="{{ $event->moderator }}" placeholder="Nama moderator"
+                            class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal</label>
-                        <input type="date" name="tanggal" value="{{ $event->tanggal }}" required
-                            class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                        <input type="text" id="tanggal" name="tanggal" value="{{ $event->tanggal }}" required readonly
+                            class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition cursor-pointer">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Waktu</label>
-                        <input type="time" name="waktu" value="{{ $event->waktu }}" required
-                            class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                        <input type="text" id="waktu" name="waktu" value="{{ \Illuminate\Support\Str::substr($event->waktu, 0, 5) }}" required readonly
+                            class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition cursor-pointer">
                     </div>
                 </div>
 
@@ -87,6 +97,21 @@
     </div>
 
     <script>
+        flatpickr("#tanggal", {
+            locale: "id",
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d F Y",
+        });
+
+        flatpickr("#waktu", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            minuteIncrement: 5,
+        });
+
         const metodeSelect = document.getElementById('metode_pembayaran');
         const hargaSection = document.getElementById('harga-section');
         metodeSelect.addEventListener('change', function () {

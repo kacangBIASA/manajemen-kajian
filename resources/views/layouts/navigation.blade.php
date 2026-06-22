@@ -5,7 +5,7 @@
             <div class="flex items-center gap-8">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 font-bold text-lg tracking-tight">
                     <img src="https://img.icons8.com/color/48/mosque.png" class="h-7 w-7" alt="Logo" />
-                    <span>TAKHOBAR</span>
+                    <span>Tadzkirah</span>
                 </a>
 
                 <div class="hidden space-x-1 sm:flex">

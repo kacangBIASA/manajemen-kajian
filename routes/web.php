@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/event-manage', [EventController::class, 'manage'])->name('event.manage');
+    Route::get('/event/{id}/detail', [EventController::class, 'detail'])->name('event.detail');
 });
 
 Route::get('/', [EventController::class, 'publicIndex'])->name('dashboard.kajian');

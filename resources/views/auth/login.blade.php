@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — TAKHOBAR</title>
+    <title>Login — Tadzkirah</title>
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;500;600;700&display=swap">
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -32,8 +32,8 @@
         <!-- Logo -->
         <div class="text-center mb-8">
             <img src="https://img.icons8.com/color/96/mosque.png" class="h-16 w-16 mx-auto mb-3" alt="Logo">
-            <h1 class="text-2xl font-bold text-green-700 dark:text-green-400 tracking-tight">TAKHOBAR</h1>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Tata Acara Kajian & Halaqah Online</p>
+            <h1 class="text-2xl font-bold text-green-700 dark:text-green-400 tracking-tight">Tadzkirah</h1>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Pengingat Kajian untuk Umat</p>
         </div>
 
         <!-- Card -->

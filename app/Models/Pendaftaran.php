@@ -13,9 +13,11 @@ class Pendaftaran extends Model
         'nama',
         'alamat',
         'no_hp',
-        'email',
         'kode_qr',
         'bukti_pembayaran',
+        'infaq_nominal',
+        'bukti_infaq',
+        'motivasi_kajian',
     ];
 
     public function event()

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'TAKHOBAR')</title>
+    <title>@yield('title', 'Tadzkirah')</title>
 
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;500;600;700&display=swap">
 
@@ -32,7 +32,7 @@
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
             <a href="{{ route('dashboard.kajian') }}" class="flex items-center gap-2 font-bold text-lg">
                 <img src="https://img.icons8.com/color/48/mosque.png" class="h-7 w-7" alt="Logo" />
-                <span>TAKHOBAR</span>
+                <span>Tadzkirah</span>
             </a>
             <div class="flex items-center gap-3">
                 <button onclick="toggleTheme()" class="p-2 rounded-md hover:bg-green-600 dark:hover:bg-gray-700 transition focus:outline-none">
@@ -55,7 +55,7 @@
     </main>
 
     <footer class="text-center text-sm py-4 bg-green-700 dark:bg-gray-900 border-t border-green-800 dark:border-gray-800 text-white">
-        &copy; {{ date('Y') }} TAKHOBAR — Untuk umat, dari umat.
+        &copy; {{ date('Y') }} Tadzkirah — Untuk umat, dari umat.
     </footer>
 
     <script>

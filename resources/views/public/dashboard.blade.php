@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Daftar Kajian — TAKHOBAR')
+@section('title', 'Daftar Kajian — Tadzkirah')
 
 @section('content')
     <div class="mb-8 text-center">
@@ -21,8 +21,10 @@
             @foreach ($events as $event)
                 <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-md hover:border-green-300 dark:hover:border-green-700 transition overflow-hidden">
                     @if ($event->flyer)
-                        <img src="{{ asset('storage/' . $event->flyer) }}" alt="Flyer"
-                            class="w-full h-44 object-cover">
+                        <div class="w-full aspect-[4/3] overflow-hidden">
+                            <img src="{{ asset('storage/' . $event->flyer) }}" alt="Flyer"
+                                class="w-full h-full object-cover object-top">
+                        </div>
                     @endif
                     <div class="p-5">
                         <div class="flex items-start justify-between gap-2 mb-2">

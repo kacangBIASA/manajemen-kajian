@@ -52,6 +52,8 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3">
+                                        <a href="{{ route('event.detail', $event->id) }}"
+                                            class="text-sm text-green-600 dark:text-green-400 hover:underline font-medium">Detail</a>
                                         <a href="{{ route('event.edit', $event->id) }}"
                                             class="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">Edit</a>
                                         <form action="{{ route('event.destroy', $event->id) }}" method="POST" class="inline"
