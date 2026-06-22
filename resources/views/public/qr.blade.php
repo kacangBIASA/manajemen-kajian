@@ -8,7 +8,7 @@
         <p class="mb-1 text-gray-700">Atas nama:</p>
         <p class="text-lg font-semibold text-green-800 mb-3">{{ $pendaftar->nama }}</p>
 
-        <div class="mb-4">
+        <div class="mb-4 flex justify-center">
             {!! DNS2D::getBarcodeHTML($pendaftar->kode_qr, 'QRCODE', 6, 6) !!}
         </div>
 
