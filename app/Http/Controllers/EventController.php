@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class EventController extends Controller
 {
@@ -216,6 +217,20 @@ class EventController extends Controller
         ]);
 
         return redirect()->route('tiket.show', $pendaftar->kode_qr);
+    }
+
+    public function clearPeserta(Request $request, Event $event)
+    {
+        $request->validate(['password' => 'required|string']);
+
+        if (!Hash::check($request->password, auth()->user()->password)) {
+            return back()->with('error', 'Password salah. Data peserta tidak dihapus.');
+        }
+
+        $jumlah = $event->pendaftarans()->count();
+        $event->pendaftarans()->delete();
+
+        return back()->with('success', $jumlah . ' data peserta berhasil dihapus.');
     }
 
     public function showTicket($kode)

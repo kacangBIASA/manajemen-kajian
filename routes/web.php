@@ -36,12 +36,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
+    Route::get('/admin/panitia/export-pdf', [\App\Http\Controllers\PanitiaController::class, 'exportPdf'])->name('admin.panitia.export-pdf');
     Route::resource('admin/panitia', \App\Http\Controllers\PanitiaController::class)
         ->names('admin.panitia')
         ->parameters(['panitia' => 'panitia']);
 
     Route::post('/event/{event}/assign-panitia', [\App\Http\Controllers\EventController::class, 'assignPanitia'])->name('event.assign.panitia');
     Route::delete('/event/{event}/remove-panitia/{panitia}', [\App\Http\Controllers\EventController::class, 'removePanitia'])->name('event.remove.panitia');
+    Route::post('/event/{event}/clear-peserta', [\App\Http\Controllers\EventController::class, 'clearPeserta'])->name('event.clear.peserta');
 });
 
 // MVP 3 — Panitia portal

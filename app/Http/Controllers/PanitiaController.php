@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -67,5 +68,13 @@ class PanitiaController extends Controller
         abort_if($panitia->role !== 'panitia', 404);
         $panitia->delete();
         return back()->with('success', 'Akun panitia berhasil dihapus.');
+    }
+
+    public function exportPdf()
+    {
+        $panitias = User::where('role', 'panitia')->with('events')->latest()->get();
+        $pdf = Pdf::loadView('admin.panitia.pdf', compact('panitias'))
+            ->setPaper('a4', 'portrait');
+        return $pdf->download('daftar-panitia-' . now()->format('Ymd') . '.pdf');
     }
 }

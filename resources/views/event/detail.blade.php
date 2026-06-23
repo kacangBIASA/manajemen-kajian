@@ -210,6 +210,46 @@
             @endif
         </div>
 
+        {{-- Danger Zone --}}
+        <div class="border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20 rounded-xl p-5">
+            <div class="flex items-start gap-3 mb-4">
+                <div class="h-8 w-8 rounded-lg bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-red-700 dark:text-red-400">Danger Zone</h3>
+                    <p class="text-xs text-red-500 dark:text-red-500/80 mt-0.5">Tindakan di bawah ini bersifat permanen dan tidak dapat dibatalkan.</p>
+                </div>
+            </div>
+
+            @if (session('error'))
+                <div class="mb-4 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-2.5 rounded-lg text-sm">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <div class="flex items-center justify-between bg-white dark:bg-gray-900/60 border border-red-200 dark:border-red-900/40 rounded-lg px-4 py-3">
+                <div>
+                    <p class="text-sm font-medium text-gray-800 dark:text-gray-100">Hapus Semua Data Peserta</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                        Menghapus {{ $peserta->count() }} data pendaftaran dari event ini secara permanen.
+                    </p>
+                </div>
+                <button onclick="confirmClearPeserta()"
+                    class="ml-4 shrink-0 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition">
+                    Hapus Semua
+                </button>
+            </div>
+
+            {{-- Hidden form, password diisi dari SweetAlert --}}
+            <form id="clear-peserta-form" action="{{ route('event.clear.peserta', $event->id) }}" method="POST" class="hidden">
+                @csrf
+                <input type="hidden" id="clear-password-input" name="password">
+            </form>
+        </div>
+
         {{-- Modal Bukti Infaq --}}
         <div x-show="buktiOpen" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -271,7 +311,40 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function confirmClearPeserta() {
+            Swal.fire({
+                title: 'Hapus Semua Data Peserta?',
+                html: `<p style="color:#6b7280;font-size:14px;margin-bottom:10px;">
+                           Aksi ini akan menghapus <strong style="color:#dc2626">{{ $peserta->count() }} data peserta</strong>
+                           dari event ini secara <strong>permanen</strong>.
+                       </p>
+                       <p style="color:#6b7280;font-size:13px;">Masukkan password admin untuk konfirmasi:</p>`,
+                input: 'password',
+                inputPlaceholder: 'Password admin',
+                inputAttributes: { autocomplete: 'current-password' },
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus Semua!',
+                confirmButtonColor: '#dc2626',
+                cancelButtonText: 'Batal',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                preConfirm: (password) => {
+                    if (!password) {
+                        Swal.showValidationMessage('Password wajib diisi!');
+                        return false;
+                    }
+                    return password;
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    document.getElementById('clear-password-input').value = result.value;
+                    document.getElementById('clear-peserta-form').submit();
+                }
+            });
+        }
+
         function detailPage() {
             return {
                 buktiOpen: false,
