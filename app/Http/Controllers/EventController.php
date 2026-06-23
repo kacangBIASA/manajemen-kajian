@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Pendaftaran;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -217,6 +218,15 @@ class EventController extends Controller
         ]);
 
         return redirect()->route('tiket.show', $pendaftar->kode_qr);
+    }
+
+    public function exportPesertaPdf(Event $event)
+    {
+        $peserta = $event->pendaftarans()->with('scanner')->latest()->get();
+        $pdf = Pdf::loadView('event.pdf-peserta', compact('event', 'peserta'))
+            ->setPaper('a4', 'landscape');
+        $filename = 'peserta-' . \Illuminate\Support\Str::slug($event->nama) . '-' . now()->format('Ymd') . '.pdf';
+        return $pdf->download($filename);
     }
 
     public function clearPeserta(Request $request, Event $event)

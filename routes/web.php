@@ -44,6 +44,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/event/{event}/assign-panitia', [\App\Http\Controllers\EventController::class, 'assignPanitia'])->name('event.assign.panitia');
     Route::delete('/event/{event}/remove-panitia/{panitia}', [\App\Http\Controllers\EventController::class, 'removePanitia'])->name('event.remove.panitia');
     Route::post('/event/{event}/clear-peserta', [\App\Http\Controllers\EventController::class, 'clearPeserta'])->name('event.clear.peserta');
+    Route::get('/event/{event}/export-peserta-pdf', [\App\Http\Controllers\EventController::class, 'exportPesertaPdf'])->name('event.export.peserta.pdf');
 });
 
 // MVP 3 — Panitia portal

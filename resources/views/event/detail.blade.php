@@ -115,9 +115,18 @@
 
         {{-- Tabel Peserta --}}
         <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-800 dark:text-gray-100">Daftar Peserta</h3>
-                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $peserta->count() }} orang terdaftar</span>
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3">
+                <div>
+                    <h3 class="font-semibold text-gray-800 dark:text-gray-100">Daftar Peserta</h3>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">{{ $peserta->count() }} orang terdaftar</span>
+                </div>
+                <a href="{{ route('event.export.peserta.pdf', $event->id) }}"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-lg transition shrink-0">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Export PDF
+                </a>
             </div>
 
             @if ($peserta->isEmpty())
@@ -219,7 +228,7 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-red-700 dark:text-red-400">Danger Zone</h3>
+                    <h3 class="font-semibold text-red-700 dark:text-red-400">Peringatan !</h3>
                     <p class="text-xs text-red-500 dark:text-red-500/80 mt-0.5">Tindakan di bawah ini bersifat permanen dan tidak dapat dibatalkan.</p>
                 </div>
             </div>
@@ -314,34 +323,49 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function confirmClearPeserta() {
+            // Langkah 1 — Konfirmasi
             Swal.fire({
                 title: 'Hapus Semua Data Peserta?',
-                html: `<p style="color:#6b7280;font-size:14px;margin-bottom:10px;">
+                html: `<p style="color:#6b7280;font-size:14px;">
                            Aksi ini akan menghapus <strong style="color:#dc2626">{{ $peserta->count() }} data peserta</strong>
-                           dari event ini secara <strong>permanen</strong>.
-                       </p>
-                       <p style="color:#6b7280;font-size:13px;">Masukkan password admin untuk konfirmasi:</p>`,
-                input: 'password',
-                inputPlaceholder: 'Password admin',
-                inputAttributes: { autocomplete: 'current-password' },
+                           dari event <strong>{{ $event->nama }}</strong> secara permanen dan tidak dapat dibatalkan.
+                       </p>`,
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus Semua!',
+                confirmButtonText: 'Ya, lanjutkan →',
                 confirmButtonColor: '#dc2626',
                 cancelButtonText: 'Batal',
                 cancelButtonColor: '#6b7280',
                 reverseButtons: true,
-                preConfirm: (password) => {
-                    if (!password) {
-                        Swal.showValidationMessage('Password wajib diisi!');
-                        return false;
-                    }
-                    return password;
-                }
             }).then((result) => {
-                if (result.isConfirmed && result.value) {
-                    document.getElementById('clear-password-input').value = result.value;
-                    document.getElementById('clear-peserta-form').submit();
-                }
+                if (!result.isConfirmed) return;
+
+                // Langkah 2 — Input password
+                Swal.fire({
+                    title: 'Masukkan Password Admin',
+                    text: 'Konfirmasi identitas sebelum data dihapus.',
+                    input: 'password',
+                    inputPlaceholder: 'Password admin',
+                    inputAttributes: { autocomplete: 'current-password' },
+                    showCancelButton: true,
+                    confirmButtonText: 'Hapus Sekarang!',
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonText: 'Batal',
+                    cancelButtonColor: '#6b7280',
+                    reverseButtons: true,
+                    preConfirm: (password) => {
+                        if (!password) {
+                            Swal.showValidationMessage('Password wajib diisi!');
+                            return false;
+                        }
+                        return password;
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed && result.value) {
+                        document.getElementById('clear-password-input').value = result.value;
+                        document.getElementById('clear-peserta-form').submit();
+                    }
+                });
             });
         }
 
