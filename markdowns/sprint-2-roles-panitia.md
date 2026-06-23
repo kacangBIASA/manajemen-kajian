@@ -149,6 +149,97 @@ return redirect($role === 'admin' ? '/admin/dashboard' : '/panitia/dashboard');
 
 ---
 
+## RESTful API
+
+Sprint 2 juga memperkenalkan API layer agar aplikasi bisa dikonsumsi oleh klien lain (mobile app, integrasi pihak ketiga, atau PWA di masa depan).
+
+### Autentikasi API
+Menggunakan **Laravel Sanctum** (sudah tersedia di Laravel 10 Breeze).
+- Panitia & admin login via `/api/login` → dapat token
+- Token dikirim di header: `Authorization: Bearer {token}`
+- Token bisa di-revoke via `/api/logout`
+
+### Endpoint yang Direncanakan
+
+#### Auth
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `POST` | `/api/login` | Login, return token |
+| `POST` | `/api/logout` | Revoke token |
+| `GET`  | `/api/me` | Info user yang sedang login |
+
+#### Events (Public)
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `GET`  | `/api/events` | Daftar semua event aktif |
+| `GET`  | `/api/events/{id}` | Detail event |
+| `POST` | `/api/events/{id}/daftar` | Daftar peserta (public, no auth) |
+| `GET`  | `/api/tiket/{kode}` | Info tiket berdasarkan kode QR |
+
+#### Panitia (auth + role:panitia)
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `GET`  | `/api/panitia/events` | Event yang di-assign ke panitia ini |
+| `GET`  | `/api/panitia/events/{id}/peserta` | Daftar peserta event |
+| `POST` | `/api/panitia/scan` | Scan QR → presensi peserta |
+| `POST` | `/api/panitia/events/{id}/infaq` | Catat infaq di lokasi |
+
+#### Admin (auth + role:admin)
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `GET`  | `/api/admin/events/{id}/peserta` | Semua peserta + scan log |
+| `GET`  | `/api/admin/events/{id}/infaq` | Rekap infaq per panitia |
+| `POST` | `/api/admin/panitia` | Buat akun panitia |
+| `POST` | `/api/admin/events/{id}/assign` | Assign panitia ke event |
+
+### Struktur Response Standar
+
+```json
+{
+  "status": "success",
+  "data": { ... },
+  "message": "Presensi berhasil dicatat"
+}
+```
+
+Error response:
+```json
+{
+  "status": "error",
+  "message": "QR Code tidak ditemukan",
+  "code": 404
+}
+```
+
+### File yang Perlu Dibuat
+
+```
+app/Http/Controllers/Api/
+├── AuthController.php        ← login, logout, me
+├── EventController.php       ← public events + daftar
+├── PanitiaController.php     ← scan, peserta, infaq
+└── AdminController.php       ← kelola panitia, assign, rekap
+routes/api.php                ← semua route API
+```
+
+### Middleware API
+```php
+// routes/api.php
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/events/{id}/daftar', [EventController::class, 'daftar']);
+Route::get('/tiket/{kode}', [EventController::class, 'tiket']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+
+    Route::middleware('role:panitia')->prefix('panitia')->group(...);
+    Route::middleware('role:admin')->prefix('admin')->group(...);
+});
+```
+
+---
+
 ## Catatan Implementasi
 
 - **Panitia tidak bisa lihat event lain** selain yang di-assign admin
