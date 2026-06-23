@@ -10,7 +10,7 @@
         </div>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <div class="max-w-7xl mx-auto px-4 py-6 space-y-6" x-data="detailPage()">
 
         {{-- Metadata Event --}}
         <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
@@ -77,6 +77,13 @@
                     Belum ada peserta yang mendaftar.
                 </div>
             @else
+                {{-- Pre-render QR (hidden) untuk setiap peserta --}}
+                @foreach ($peserta as $p)
+                    <div id="qr-data-{{ $p->id }}" class="hidden">
+                        {!! DNS2D::getBarcodeHTML($p->kode_qr, 'QRCODE', 5, 5) !!}
+                    </div>
+                @endforeach
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
@@ -89,6 +96,7 @@
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Infaq</th>
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Bukti Infaq</th>
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Status</th>
+                                <th class="text-center px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Tiket</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -114,8 +122,11 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         @if ($p->bukti_infaq)
-                                            <a href="{{ asset('storage/' . $p->bukti_infaq) }}" target="_blank"
-                                                class="text-xs text-blue-500 dark:text-blue-400 hover:underline">Lihat</a>
+                                            @php $ext = pathinfo($p->bukti_infaq, PATHINFO_EXTENSION); @endphp
+                                            <button @click="openBukti('{{ asset('storage/' . $p->bukti_infaq) }}', '{{ $p->nama }}', '{{ $ext }}')"
+                                                class="text-xs text-blue-500 dark:text-blue-400 hover:underline font-medium">
+                                                Lihat
+                                            </button>
                                         @else
                                             <span class="text-gray-300 dark:text-gray-600">—</span>
                                         @endif
@@ -128,6 +139,15 @@
                                             {{ $p->status }}
                                         </span>
                                     </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <button @click="openQR({{ $p->id }}, '{{ addslashes($p->nama) }}', '{{ $p->kode_qr }}')"
+                                            class="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400 hover:underline">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                                            </svg>
+                                            QR
+                                        </button>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -136,5 +156,96 @@
             @endif
         </div>
 
+        {{-- Modal Bukti Infaq --}}
+        <div x-show="buktiOpen" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            @keydown.escape.window="buktiOpen = false">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="buktiOpen = false"></div>
+            <div class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl max-w-lg w-full p-5 z-10">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">Bukti Infaq</p>
+                        <h3 class="font-semibold text-gray-800 dark:text-gray-100" x-text="buktiNama"></h3>
+                    </div>
+                    <button @click="buktiOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <template x-if="buktiExt === 'pdf'">
+                    <div class="text-center py-6">
+                        <svg class="h-12 w-12 text-red-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">File PDF</p>
+                        <a :href="buktiUrl" target="_blank"
+                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition">
+                            Buka PDF
+                        </a>
+                    </div>
+                </template>
+                <template x-if="buktiExt !== 'pdf'">
+                    <img :src="buktiUrl" alt="Bukti Infaq" class="w-full rounded-lg max-h-96 object-contain bg-gray-50 dark:bg-gray-800">
+                </template>
+                <a :href="buktiUrl" target="_blank"
+                    class="mt-3 block text-center text-xs text-gray-400 dark:text-gray-500 hover:underline">
+                    Buka di tab baru
+                </a>
+            </div>
+        </div>
+
+        {{-- Modal QR Code --}}
+        <div x-show="qrOpen" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            @keydown.escape.window="qrOpen = false">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="qrOpen = false"></div>
+            <div class="relative bg-white dark:bg-gray-900 rounded-2xl shadow-xl max-w-xs w-full p-6 z-10 text-center">
+                <button @click="qrOpen = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mb-1">Tiket Peserta</p>
+                <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-4" x-text="qrNama"></h3>
+                <div class="flex justify-center mb-3">
+                    <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm inline-block" id="modal-qr-display"></div>
+                </div>
+                <p class="text-xs font-mono text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2" x-text="qrKode"></p>
+            </div>
+        </div>
+
     </div>
+
+    <script>
+        function detailPage() {
+            return {
+                buktiOpen: false,
+                buktiUrl: '',
+                buktiNama: '',
+                buktiExt: '',
+                qrOpen: false,
+                qrNama: '',
+                qrKode: '',
+
+                openBukti(url, nama, ext) {
+                    this.buktiUrl = url;
+                    this.buktiNama = nama;
+                    this.buktiExt = ext.toLowerCase();
+                    this.buktiOpen = true;
+                },
+
+                openQR(id, nama, kode) {
+                    this.qrNama = nama;
+                    this.qrKode = kode;
+                    this.qrOpen = true;
+                    this.$nextTick(() => {
+                        const src = document.getElementById('qr-data-' + id);
+                        const dst = document.getElementById('modal-qr-display');
+                        if (src && dst) dst.innerHTML = src.innerHTML;
+                    });
+                }
+            }
+        }
+    </script>
 </x-app-layout>
