@@ -18,10 +18,21 @@ class Pendaftaran extends Model
         'infaq_nominal',
         'bukti_infaq',
         'motivasi_kajian',
+        'scanned_by',
+        'scanned_at',
+    ];
+
+    protected $casts = [
+        'scanned_at' => 'datetime',
     ];
 
     public function event()
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function scanner()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'scanned_by');
     }
 }

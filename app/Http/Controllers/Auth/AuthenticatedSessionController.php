@@ -29,7 +29,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        $role = auth()->user()->role;
+        return redirect()->intended(
+            $role === 'panitia' ? route('panitia.dashboard') : route('admin.dashboard')
+        );
     }
 
     /**

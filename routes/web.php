@@ -31,10 +31,17 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/auth.php';
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
+});
+
+// Placeholder panitia dashboard — akan diganti di MVP 3
+Route::middleware(['auth', 'role:panitia'])->group(function () {
+    Route::get('/panitia/dashboard', function () {
+        return 'Dashboard Panitia — Coming Soon (MVP 3)';
+    })->name('panitia.dashboard');
 });
 
 Route::middleware(['auth'])->group(function () {

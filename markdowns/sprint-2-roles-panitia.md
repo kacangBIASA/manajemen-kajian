@@ -1,8 +1,19 @@
-# Sprint 2 — Role System & Dashboard Panitia
+# Sprint 2 — Role System, Tipe Kajian & Dashboard Panitia
 
 ## Konteks
 Sprint 1 selesai dengan sistem pendaftaran publik, QR tiket, dan scan presensi oleh admin.
-Sprint 2 memperkenalkan **role panitia** sebagai peran terpisah dari admin, dengan akses terbatas dan dashboard sendiri.
+Sprint 2 memperkenalkan **role panitia**, **tipe kajian (online/offline)**, dan **RESTful API** berbasis Sanctum.
+
+---
+
+## Struktur MVP
+
+| MVP | Fokus | Status |
+|-----|-------|--------|
+| MVP 1 | Database, Models, Auth & Middleware | Planned |
+| MVP 2 | Tipe Kajian + Fitur Admin | Planned |
+| MVP 3 | Dashboard & Fitur Panitia | Planned |
+| MVP 4 | RESTful API (Sanctum) | Planned |
 
 ---
 
@@ -15,7 +26,29 @@ Sprint 2 memperkenalkan **role panitia** sebagai peran terpisah dari admin, deng
 
 ---
 
+## Tipe Kajian
+
+| Tipe | Keterangan |
+|------|------------|
+| `offline` | Hadir fisik di lokasi — tampilkan nama tempat |
+| `online` | Virtual via Zoom/Meet/dll — tampilkan link bergabung |
+
+Kolom yang ditambahkan ke tabel `events`:
+- `tipe` — ENUM `offline` / `online`, default `offline`
+- `link_online` — VARCHAR nullable (hanya diisi jika tipe = online)
+
+Di tiket peserta: jika online → tampilkan link bergabung; jika offline → tampilkan nama tempat.
+
+---
+
 ## Perubahan Database
+
+### 0. Tambah kolom `tipe` + `link_online` ke tabel `events`
+```sql
+ALTER TABLE events
+  ADD COLUMN tipe ENUM('offline','online') DEFAULT 'offline' AFTER tempat,
+  ADD COLUMN link_online VARCHAR(500) NULL AFTER tipe;
+```
 
 ### 1. Tambah kolom `role` ke tabel `users`
 ```sql
@@ -56,6 +89,11 @@ CREATE TABLE infaq_records (
 ---
 
 ## Flow Lengkap
+
+### Tipe Kajian di Form Daftar & Tiket
+- **Offline**: tampilkan nama tempat + peta (opsional)
+- **Online**: tampilkan link bergabung sebagai tombol hijau di form daftar & tiket QR
+- Tiket peserta online mencantumkan link agar bisa langsung bergabung tanpa perlu cari info lagi
 
 ### Admin
 1. Login → redirect ke `/admin/dashboard`

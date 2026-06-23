@@ -21,24 +21,30 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isPanitia(): bool
+    {
+        return $this->role === 'panitia';
+    }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_panitia');
+    }
 }
