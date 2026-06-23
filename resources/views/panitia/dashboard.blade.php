@@ -98,10 +98,6 @@
                                 class="flex-1 text-center py-2 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-lg transition">
                                 Scan QR
                             </a>
-                            <a href="{{ route('panitia.event.infaq', $event->id) }}"
-                                class="flex-1 text-center py-2 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold rounded-lg transition">
-                                Catat Infaq
-                            </a>
                         </div>
                     </div>
                 @endforeach

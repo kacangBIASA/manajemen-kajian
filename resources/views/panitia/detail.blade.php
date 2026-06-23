@@ -33,17 +33,10 @@
                 </svg>
                 Scan QR Absensi
             </a>
-            <a href="{{ route('panitia.event.infaq', $event->id) }}"
-                class="inline-flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-2.5 rounded-lg transition">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                Catat Infaq
-            </a>
         </div>
 
         {{-- Stat cards --}}
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="grid grid-cols-3 gap-4">
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 text-center shadow-sm">
                 <p class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ $peserta->count() }}</p>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Total Peserta</p>
@@ -55,12 +48,6 @@
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 text-center shadow-sm">
                 <p class="text-2xl font-bold text-amber-500 dark:text-amber-400">{{ $totalBelum }}</p>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Belum Hadir</p>
-            </div>
-            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 text-center shadow-sm">
-                <p class="text-lg font-bold text-teal-600 dark:text-teal-400">
-                    Rp {{ number_format($totalInfaq, 0, ',', '.') }}
-                </p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Total Infaq</p>
             </div>
         </div>
 
@@ -136,49 +123,6 @@
             </div>
         </div>
 
-        {{-- Infaq yang saya catat --}}
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-800 dark:text-gray-100">Infaq yang Saya Catat</h3>
-                <span class="text-sm font-semibold text-teal-600 dark:text-teal-400">
-                    Total: Rp {{ number_format($infaqSaya->sum('nominal'), 0, ',', '.') }}
-                </span>
-            </div>
-
-            @if ($infaqSaya->isEmpty())
-                <div class="py-8 text-center text-sm text-gray-400 dark:text-gray-500">
-                    Belum ada catatan infaq dari kamu.
-                    <a href="{{ route('panitia.event.infaq', $event->id) }}" class="text-teal-600 dark:text-teal-400 hover:underline ml-1">Catat sekarang</a>
-                </div>
-            @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="text-left text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide border-b border-gray-100 dark:border-gray-800">
-                                <th class="px-5 py-3">Nominal</th>
-                                <th class="px-5 py-3">Catatan</th>
-                                <th class="px-5 py-3">Waktu</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            @foreach ($infaqSaya as $rec)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
-                                    <td class="px-5 py-3 font-semibold text-gray-800 dark:text-gray-100">
-                                        Rp {{ number_format($rec->nominal, 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-5 py-3 text-gray-500 dark:text-gray-400">
-                                        {{ $rec->catatan ?? '—' }}
-                                    </td>
-                                    <td class="px-5 py-3 text-gray-400 dark:text-gray-500 text-xs">
-                                        {{ $rec->created_at->format('d M Y H:i') }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
     </div>
 
     <script>

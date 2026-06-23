@@ -63,41 +63,5 @@
             </form>
         </div>
 
-        {{-- Riwayat infaq saya --}}
-        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-800 dark:text-gray-100">Riwayat Infaq Saya</h3>
-                @if ($infaqSaya->isNotEmpty())
-                    <span class="text-sm font-semibold text-teal-600 dark:text-teal-400">
-                        Total: Rp {{ number_format($infaqSaya->sum('nominal'), 0, ',', '.') }}
-                    </span>
-                @endif
-            </div>
-
-            @if ($infaqSaya->isEmpty())
-                <div class="py-10 text-center text-sm text-gray-400 dark:text-gray-500">
-                    Belum ada catatan infaq.
-                </div>
-            @else
-                <div class="divide-y divide-gray-100 dark:divide-gray-800">
-                    @foreach ($infaqSaya as $rec)
-                        <div class="px-5 py-4 flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                                    Rp {{ number_format($rec->nominal, 0, ',', '.') }}
-                                </p>
-                                @if ($rec->catatan)
-                                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ $rec->catatan }}</p>
-                                @endif
-                            </div>
-                            <span class="text-xs text-gray-400 dark:text-gray-500">
-                                {{ $rec->created_at->format('d M Y') }}<br>
-                                <span class="text-gray-300 dark:text-gray-600">{{ $rec->created_at->format('H:i') }}</span>
-                            </span>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
     </div>
 </x-panitia-layout>
