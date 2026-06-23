@@ -34,12 +34,15 @@ class ScanController extends Controller
             ]);
         }
 
-        $pendaftar->status = 'Hadir';
-        $pendaftar->save();
+        $pendaftar->update([
+            'status'     => 'Hadir',
+            'scanned_by' => auth()->id(),
+            'scanned_at' => now(),
+        ]);
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Absensi berhasil untuk: ' . $pendaftar->nama
+            'status'  => 'success',
+            'message' => 'Absensi berhasil untuk: ' . $pendaftar->nama,
         ]);
     }
 }

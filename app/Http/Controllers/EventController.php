@@ -36,7 +36,9 @@ class EventController extends Controller
             'moderator' => 'nullable|string|max:255',
             'tanggal' => 'required|date',
             'waktu' => 'required',
+            'tipe' => 'required|in:offline,online',
             'tempat' => 'required',
+            'link_online' => 'nullable|url|required_if:tipe,online',
             'deskripsi' => 'nullable',
             'metode_pembayaran' => 'required|in:Gratis,Berbayar',
             'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
@@ -81,7 +83,9 @@ class EventController extends Controller
             'moderator' => 'nullable|string|max:255',
             'tanggal' => 'required',
             'waktu' => 'required',
+            'tipe' => 'required|in:offline,online',
             'tempat' => 'required',
+            'link_online' => 'nullable|url|required_if:tipe,online',
             'deskripsi' => 'nullable',
             'metode_pembayaran' => 'required|in:Gratis,Berbayar',
             'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
@@ -119,12 +123,31 @@ class EventController extends Controller
 
     public function detail($id)
     {
-        $event = Event::with('pendaftarans')->findOrFail($id);
+        $event = Event::with(['pendaftarans.scanner', 'panitias', 'infaqRecords.panitia'])->findOrFail($id);
         $peserta = $event->pendaftarans()->latest()->get();
         $totalHadir = $peserta->where('status', 'Hadir')->count();
         $totalBelum = $peserta->where('status', 'Belum Hadir')->count();
-        $totalInfaq = $peserta->sum('infaq_nominal');
-        return view('event.detail', compact('event', 'peserta', 'totalHadir', 'totalBelum', 'totalInfaq'));
+        $totalInfaqPeserta = $peserta->sum('infaq_nominal');
+        $totalInfaqPanitia = $event->infaqRecords->sum('nominal');
+        $totalInfaq = $totalInfaqPeserta + $totalInfaqPanitia;
+        $semuaPanitia = \App\Models\User::where('role', 'panitia')->get();
+        return view('event.detail', compact(
+            'event', 'peserta', 'totalHadir', 'totalBelum',
+            'totalInfaq', 'totalInfaqPeserta', 'totalInfaqPanitia', 'semuaPanitia'
+        ));
+    }
+
+    public function assignPanitia(Request $request, \App\Models\Event $event)
+    {
+        $request->validate(['panitia_id' => 'required|exists:users,id']);
+        $event->panitias()->syncWithoutDetaching([$request->panitia_id]);
+        return back()->with('success', 'Panitia berhasil ditugaskan.');
+    }
+
+    public function removePanitia(\App\Models\Event $event, \App\Models\User $panitia)
+    {
+        $event->panitias()->detach($panitia->id);
+        return back()->with('success', 'Panitia berhasil dilepas dari event ini.');
     }
 
     public function publicIndex()

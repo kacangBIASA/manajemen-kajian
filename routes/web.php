@@ -35,13 +35,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
+
+    Route::resource('admin/panitia', \App\Http\Controllers\PanitiaController::class)
+        ->names('admin.panitia')
+        ->parameters(['panitia' => 'panitia']);
+
+    Route::post('/event/{event}/assign-panitia', [\App\Http\Controllers\EventController::class, 'assignPanitia'])->name('event.assign.panitia');
+    Route::delete('/event/{event}/remove-panitia/{panitia}', [\App\Http\Controllers\EventController::class, 'removePanitia'])->name('event.remove.panitia');
 });
 
-// Placeholder panitia dashboard — akan diganti di MVP 3
+// MVP 3 — Panitia portal
 Route::middleware(['auth', 'role:panitia'])->group(function () {
-    Route::get('/panitia/dashboard', function () {
-        return 'Dashboard Panitia — Coming Soon (MVP 3)';
-    })->name('panitia.dashboard');
+    Route::get('/panitia/dashboard', [\App\Http\Controllers\PanitiaDashboardController::class, 'dashboard'])->name('panitia.dashboard');
+    Route::get('/panitia/event/{id}', [\App\Http\Controllers\PanitiaDashboardController::class, 'detail'])->name('panitia.event.detail');
+    Route::get('/panitia/event/{id}/scan', [\App\Http\Controllers\PanitiaDashboardController::class, 'scan'])->name('panitia.event.scan');
+    Route::post('/panitia/scan/check', [\App\Http\Controllers\PanitiaDashboardController::class, 'checkScan'])->name('panitia.scan.check');
+    Route::get('/panitia/event/{id}/infaq', [\App\Http\Controllers\PanitiaDashboardController::class, 'infaqForm'])->name('panitia.event.infaq');
+    Route::post('/panitia/event/{id}/infaq', [\App\Http\Controllers\PanitiaDashboardController::class, 'storeInfaq'])->name('panitia.event.infaq.store');
 });
 
 Route::middleware(['auth'])->group(function () {

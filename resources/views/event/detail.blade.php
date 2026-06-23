@@ -62,7 +62,55 @@
             <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 text-center shadow-sm">
                 <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">Rp{{ number_format($totalInfaq, 0, ',', '.') }}</p>
                 <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Total Infaq</p>
+                <p class="text-xs text-gray-300 dark:text-gray-600 mt-0.5">
+                    Peserta Rp{{ number_format($totalInfaqPeserta, 0, ',', '.') }} + Panitia Rp{{ number_format($totalInfaqPanitia, 0, ',', '.') }}
+                </p>
             </div>
+        </div>
+
+        {{-- Panitia yang Ditugaskan --}}
+        <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-5">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold text-gray-800 dark:text-gray-100">Panitia Ditugaskan</h3>
+                @if (session('success'))
+                    <span class="text-xs text-green-600 dark:text-green-400">{{ session('success') }}</span>
+                @endif
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+                @forelse ($event->panitias as $pan)
+                    <div class="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-1.5">
+                        <span class="text-sm font-medium text-green-800 dark:text-green-300">{{ $pan->name }}</span>
+                        <form action="{{ route('event.remove.panitia', [$event->id, $pan->id]) }}" method="POST" class="inline">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-green-400 hover:text-red-500 transition ml-1" title="Lepas panitia">
+                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </form>
+                    </div>
+                @empty
+                    <p class="text-sm text-gray-400 dark:text-gray-500">Belum ada panitia ditugaskan.</p>
+                @endforelse
+            </div>
+
+            {{-- Assign panitia baru --}}
+            @php $tersedia = $semuaPanitia->whereNotIn('id', $event->panitias->pluck('id')); @endphp
+            @if ($tersedia->isNotEmpty())
+                <form action="{{ route('event.assign.panitia', $event->id) }}" method="POST" class="flex gap-2">
+                    @csrf
+                    <select name="panitia_id"
+                        class="flex-1 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                        @foreach ($tersedia as $pan)
+                            <option value="{{ $pan->id }}">{{ $pan->name }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
+                        Tugaskan
+                    </button>
+                </form>
+            @else
+                <p class="text-xs text-gray-400 dark:text-gray-500">Semua panitia sudah ditugaskan di event ini.</p>
+            @endif
         </div>
 
         {{-- Tabel Peserta --}}
@@ -138,6 +186,12 @@
                                                 : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400' }}">
                                             {{ $p->status }}
                                         </span>
+                                        @if ($p->status === 'Hadir' && $p->scanner)
+                                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                                                oleh {{ $p->scanner->name }}<br>
+                                                {{ $p->scanned_at?->format('H:i') }}
+                                            </p>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 text-center">
                                         <button @click="openQR({{ $p->id }}, '{{ addslashes($p->nama) }}', '{{ $p->kode_qr }}')"

@@ -35,6 +35,20 @@
                 <p class="text-xs font-mono text-gray-500 dark:text-gray-400">{{ $pendaftar->kode_qr }}</p>
             </div>
 
+            {{-- Link bergabung jika kajian online --}}
+            @if ($event->tipe === 'online' && $event->link_online)
+                <div class="mb-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg px-4 py-3 text-center">
+                    <p class="text-xs text-blue-600 dark:text-blue-400 font-medium mb-2">Kajian Online · {{ $event->tempat }}</p>
+                    <a href="{{ $event->link_online }}" target="_blank"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+                        </svg>
+                        Bergabung Sekarang
+                    </a>
+                </div>
+            @endif
+
             <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">
                 Screenshot atau download QR ini sebagai tiket kehadiran. Tunjukkan ke panitia saat registrasi ulang.
             </p>

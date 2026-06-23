@@ -10,8 +10,8 @@
 
     <div class="max-w-2xl mx-auto px-4 py-8">
         <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm p-6">
-            <form action="{{ route('event.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
-                @csrf
+            <form action="{{ route('event.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5"
+                x-data="{ tipe: 'offline' }">
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Kajian</label>
@@ -45,11 +45,47 @@
                     </div>
                 </div>
 
+                {{-- Tipe Kajian --}}
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tempat</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipe Kajian</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="tipe" value="offline" x-model="tipe" class="sr-only">
+                            <div :class="tipe === 'offline' ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'"
+                                class="flex items-center gap-2 border-2 rounded-lg px-4 py-2.5 text-sm font-medium transition">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                Offline
+                            </div>
+                        </label>
+                        <label class="flex-1 cursor-pointer">
+                            <input type="radio" name="tipe" value="online" x-model="tipe" class="sr-only">
+                            <div :class="tipe === 'online' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400'"
+                                class="flex items-center gap-2 border-2 rounded-lg px-4 py-2.5 text-sm font-medium transition">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+                                Online
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <span x-text="tipe === 'online' ? 'Nama Platform' : 'Tempat'"></span>
+                    </label>
                     <input type="text" name="tempat" required
+                        :placeholder="tipe === 'online' ? 'Contoh: Zoom, Google Meet, YouTube Live' : 'Nama masjid / gedung / lokasi'"
                         class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
                 </div>
+
+                <div x-show="tipe === 'online'" x-cloak>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Link Bergabung</label>
+                    <input type="url" name="link_online" :required="tipe === 'online'"
+                        placeholder="https://zoom.us/j/... atau link platform lain"
+                        class="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+                    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Link ini akan ditampilkan di tiket peserta.</p>
+                </div>
+
+                @csrf
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deskripsi</label>
