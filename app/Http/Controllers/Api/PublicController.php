@@ -37,7 +37,15 @@ class PublicController extends Controller
 
     public function eventDetail($id)
     {
-        $event = Event::withCount('pendaftarans')->findOrFail($id);
+        $event = Event::withCount('pendaftarans')->find($id);
+
+        if (!$event) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Data kajian tidak ditemukan.',
+                'data'    => null,
+            ], 404);
+        }
 
         return response()->json([
             'status'  => 'success',
@@ -63,7 +71,15 @@ class PublicController extends Controller
 
     public function daftar(Request $request, $id)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::find($id);
+
+        if (!$event) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Data kajian tidak ditemukan.',
+                'data'    => null,
+            ], 404);
+        }
 
         $rules = [
             'nama'             => 'required|string|max:255',
@@ -129,7 +145,15 @@ class PublicController extends Controller
 
     public function tiket($kode)
     {
-        $pendaftar = Pendaftaran::with('event')->where('kode_qr', $kode)->firstOrFail();
+        $pendaftar = Pendaftaran::with('event')->where('kode_qr', $kode)->first();
+
+        if (!$pendaftar) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Tiket tidak ditemukan. Pastikan kode QR benar.',
+                'data'    => null,
+            ], 404);
+        }
 
         return response()->json([
             'status'  => 'success',

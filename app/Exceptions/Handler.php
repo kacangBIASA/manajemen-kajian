@@ -6,6 +6,8 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -49,6 +51,26 @@ class Handler extends ExceptionHandler
         });
 
         // Pastikan semua error di route /api/* selalu balik JSON
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Endpoint atau data tidak ditemukan.',
+                    'data'    => null,
+                ], 404);
+            }
+        });
+
+        $this->renderable(function (MethodNotAllowedHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Method tidak diizinkan untuk endpoint ini.',
+                    'data'    => null,
+                ], 405);
+            }
+        });
+
         $this->renderable(function (ModelNotFoundException $e, $request) {
             if ($request->is('api/*')) {
                 return response()->json([
