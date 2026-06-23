@@ -14,6 +14,15 @@ use App\Http\Controllers\Api\AdminApiController;
 | Format response:
 | { "status": "success|error|info", "message": "...", "data": {...}|null }
 |
+| HTTP Status Codes:
+| 200 OK          — GET, PUT, PATCH, DELETE berhasil
+| 201 Created     — POST berhasil membuat resource
+| 401 Unauthorized— tidak terautentikasi
+| 403 Forbidden   — tidak punya izin
+| 404 Not Found   — resource tidak ditemukan
+| 409 Conflict    — duplikat data
+| 422 Unprocessable — validasi gagal
+|
 */
 
 // ── Auth ──────────────────────────────────────────────────────────────────
@@ -40,8 +49,27 @@ Route::middleware(['auth:sanctum', 'role.api:panitia'])->prefix('panitia')->grou
 
 // ── Admin ─────────────────────────────────────────────────────────────────
 Route::middleware(['auth:sanctum', 'role.api:admin'])->prefix('admin')->group(function () {
+
+    // Events CRUD
+    Route::get('/events', [AdminApiController::class, 'events']);
+    Route::post('/events', [AdminApiController::class, 'createEvent']);
+    Route::put('/events/{id}', [AdminApiController::class, 'updateEvent']);
+    Route::patch('/events/{id}', [AdminApiController::class, 'updateEvent']);
+    Route::delete('/events/{id}', [AdminApiController::class, 'deleteEvent']);
+
+    // Peserta & Infaq (read-only)
     Route::get('/events/{id}/peserta', [AdminApiController::class, 'peserta']);
     Route::get('/events/{id}/infaq', [AdminApiController::class, 'infaq']);
+
+    // Assign / Remove Panitia ke Event
+    Route::post('/events/{id}/panitia', [AdminApiController::class, 'assignPanitia']);
+    Route::delete('/events/{eventId}/panitia/{panitiaId}', [AdminApiController::class, 'removePanitia']);
+
+    // Panitia CRUD
+    Route::get('/panitia', [AdminApiController::class, 'listPanitia']);
     Route::post('/panitia', [AdminApiController::class, 'createPanitia']);
-    Route::post('/events/{id}/assign-panitia', [AdminApiController::class, 'assignPanitia']);
+    Route::get('/panitia/{id}', [AdminApiController::class, 'showPanitia']);
+    Route::put('/panitia/{id}', [AdminApiController::class, 'updatePanitia']);
+    Route::patch('/panitia/{id}', [AdminApiController::class, 'updatePanitia']);
+    Route::delete('/panitia/{id}', [AdminApiController::class, 'deletePanitia']);
 });
