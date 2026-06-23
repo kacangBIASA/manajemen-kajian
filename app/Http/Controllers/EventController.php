@@ -173,7 +173,8 @@ class EventController extends Controller
             'alamat' => 'required|string',
             'no_hp' => 'required|string|max:20',
             'infaq_nominal' => 'nullable|integer|min:0',
-            'bukti_infaq' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'infaq_is_custom' => 'nullable|in:0,1',
+            'bukti_infaq' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048|required_if:infaq_is_custom,1',
             'motivasi_kajian' => 'nullable|string',
         ];
 

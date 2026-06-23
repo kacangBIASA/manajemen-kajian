@@ -18,6 +18,7 @@ class Pendaftaran extends Model
         'infaq_nominal',
         'bukti_infaq',
         'motivasi_kajian',
+        'status',
         'scanned_by',
         'scanned_at',
     ];

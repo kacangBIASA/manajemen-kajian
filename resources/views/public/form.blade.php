@@ -120,10 +120,19 @@
                                 class="hidden mt-2 w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
                         </div>
 
-                        <div>
-                            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Upload bukti transfer infaq</label>
-                            <input type="file" name="bukti_infaq" accept="image/*,application/pdf"
+                        <input type="hidden" name="infaq_is_custom" id="infaq-is-custom" value="0">
+
+                        <div id="bukti-infaq-wrap" class="hidden">
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                Upload bukti transfer infaq
+                                <span class="required-star text-red-500">*</span>
+                                <span class="optional-text text-gray-400">(opsional)</span>
+                            </label>
+                            <input type="file" name="bukti_infaq" id="bukti-infaq-input" accept="image/*,application/pdf"
                                 class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-green-50 dark:file:bg-green-900/30 file:text-green-700 dark:file:text-green-400 hover:file:bg-green-100 transition">
+                            @error('bukti_infaq')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -137,30 +146,73 @@
     </div>
 
     <script>
-        let selectedNominal = null;
+        const PRESET_NOMINALS = [20000, 30000, 50000];
 
-        function pilihInfaq(nominal, el) {
-            selectedNominal = nominal;
-            document.querySelectorAll('.infaq-btn').forEach(b => {
-                b.classList.remove('border-green-500', 'text-green-700', 'dark:text-green-400', 'bg-green-50', 'dark:bg-green-900/20');
-            });
-            el.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
-            const input = document.getElementById('infaq-lain');
-            input.classList.add('hidden');
-            input.name = 'infaq_nominal';
-            input.value = nominal;
-        }
-
-        function pilihInfaqLain(el) {
+        function highlightBtn(el) {
             document.querySelectorAll('.infaq-btn').forEach(b => {
                 b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
             });
             el.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
-            const input = document.getElementById('infaq-lain');
-            input.classList.remove('hidden');
-            input.name = 'infaq_nominal';
-            input.value = '';
-            input.focus();
         }
+
+        function showBuktiInfaq(required) {
+            const wrap = document.getElementById('bukti-infaq-wrap');
+            const input = document.getElementById('bukti-infaq-input');
+            const flag = document.getElementById('infaq-is-custom');
+            wrap.classList.remove('hidden');
+            input.required = required;
+            flag.value = required ? '1' : '0';
+            // Update label wajib/opsional
+            const star = wrap.querySelector('.required-star');
+            const opt = wrap.querySelector('.optional-text');
+            if (star) star.style.display = required ? 'inline' : 'none';
+            if (opt) opt.style.display = required ? 'none' : 'inline';
+        }
+
+        function pilihInfaq(nominal, el) {
+            highlightBtn(el);
+            const lain = document.getElementById('infaq-lain');
+            lain.classList.add('hidden');
+            lain.name = 'infaq_nominal';
+            lain.value = nominal;
+            showBuktiInfaq(false); // muncul, tapi tidak wajib
+        }
+
+        function pilihInfaqLain(el) {
+            highlightBtn(el);
+            const lain = document.getElementById('infaq-lain');
+            lain.classList.remove('hidden');
+            lain.name = 'infaq_nominal';
+            lain.value = '';
+            lain.focus();
+            showBuktiInfaq(true); // muncul + wajib
+        }
+
+        // Restore state jika validasi gagal (kembali ke halaman dengan old input)
+        @if (old('infaq_nominal') || old('infaq_is_custom'))
+            document.addEventListener('DOMContentLoaded', function () {
+                const isCustom = '{{ old('infaq_is_custom') }}' === '1';
+                const oldNominal = parseInt('{{ old('infaq_nominal') }}') || 0;
+
+                if (isCustom) {
+                    // Nominal Lain — tampilkan input + bukti wajib
+                    const lain = document.getElementById('infaq-lain');
+                    lain.classList.remove('hidden');
+                    lain.value = oldNominal || '';
+                    showBuktiInfaq(true);
+                    const btns = document.querySelectorAll('.infaq-btn');
+                    btns[btns.length - 1].classList.add('border-green-500', 'text-green-700', 'bg-green-50');
+                } else if (oldNominal) {
+                    // Preset nominal — tampilkan bukti opsional, highlight tombol yang sesuai
+                    document.getElementById('infaq-lain').value = oldNominal;
+                    showBuktiInfaq(false);
+                    document.querySelectorAll('.infaq-btn').forEach(btn => {
+                        if (btn.textContent.replace(/\D/g, '') == String(oldNominal).replace(/\D/g, '')) {
+                            btn.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
+                        }
+                    });
+                }
+            });
+        @endif
     </script>
 @endsection
