@@ -45,12 +45,19 @@ class EventController extends Controller
             'metode_pembayaran' => 'required|in:Gratis,Berbayar',
             'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
             'flyer' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'qris_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'nama_bank' => 'nullable|string|max:100',
+            'no_rekening' => 'nullable|string|max:50',
+            'nama_rekening' => 'nullable|string|max:100',
         ]);
 
-        $data = $request->except('flyer');
+        $data = $request->except(['flyer', 'qris_image']);
 
         if ($request->hasFile('flyer')) {
             $data['flyer'] = $request->file('flyer')->store('flyer', 'public');
+        }
+        if ($request->hasFile('qris_image')) {
+            $data['qris_image'] = $request->file('qris_image')->store('qris', 'public');
         }
 
         Event::create($data);
@@ -92,15 +99,21 @@ class EventController extends Controller
             'metode_pembayaran' => 'required|in:Gratis,Berbayar',
             'harga' => 'nullable|integer|min:0|required_if:metode_pembayaran,Berbayar',
             'flyer' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'qris_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'nama_bank' => 'nullable|string|max:100',
+            'no_rekening' => 'nullable|string|max:50',
+            'nama_rekening' => 'nullable|string|max:100',
         ]);
 
-        $data = $request->except('flyer');
+        $data = $request->except(['flyer', 'qris_image']);
 
         if ($request->hasFile('flyer')) {
-            if ($event->flyer) {
-                \Storage::disk('public')->delete($event->flyer);
-            }
+            if ($event->flyer) \Storage::disk('public')->delete($event->flyer);
             $data['flyer'] = $request->file('flyer')->store('flyer', 'public');
+        }
+        if ($request->hasFile('qris_image')) {
+            if ($event->qris_image) \Storage::disk('public')->delete($event->qris_image);
+            $data['qris_image'] = $request->file('qris_image')->store('qris', 'public');
         }
 
         $event->update($data);

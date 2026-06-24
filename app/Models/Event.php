@@ -12,6 +12,7 @@ class Event extends Model
         'nama', 'pemateri', 'moderator', 'tanggal', 'waktu',
         'tempat', 'tipe', 'link_online', 'deskripsi',
         'metode_pembayaran', 'harga', 'flyer',
+        'qris_image', 'nama_bank', 'no_rekening', 'nama_rekening',
     ];
 
     public function pendaftarans()

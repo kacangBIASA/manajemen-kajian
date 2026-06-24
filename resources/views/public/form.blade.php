@@ -79,62 +79,126 @@
                     </div>
 
                     @if ($event->metode_pembayaran === 'Berbayar')
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload Bukti Pembayaran</label>
-                            <input type="file" name="bukti_pembayaran" accept="image/*,application/pdf" required
-                                class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-green-50 dark:file:bg-green-900/30 file:text-green-700 dark:file:text-green-400 hover:file:bg-green-100 transition">
-                        </div>
+                        {{-- Cara Pembayaran Event --}}
+                        @php
+                            $hasQris     = !empty($event->qris_image);
+                            $hasTransfer = !empty($event->nama_bank) && !empty($event->no_rekening);
+                        @endphp
+                        @if ($hasQris || $hasTransfer)
+                            <div class="border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/10 rounded-xl p-4 space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <svg class="h-4 w-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                    <span class="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                                        Cara Pembayaran — Rp{{ number_format($event->harga, 0, ',', '.') }}
+                                    </span>
+                                </div>
+
+                                <div class="{{ ($hasQris && $hasTransfer) ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : '' }}">
+                                    @if ($hasQris)
+                                        <div class="bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 rounded-lg p-3 text-center">
+                                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Scan QRIS</p>
+                                            <img src="{{ asset('storage/' . $event->qris_image) }}" alt="QRIS"
+                                                class="w-36 h-36 object-contain mx-auto rounded-lg bg-white p-1">
+                                        </div>
+                                    @endif
+                                    @if ($hasTransfer)
+                                        <div class="bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 rounded-lg p-3">
+                                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Transfer Bank</p>
+                                            <p class="text-sm font-bold text-gray-800 dark:text-gray-100">{{ $event->nama_bank }}</p>
+                                            <p class="text-lg font-bold text-amber-600 dark:text-amber-400 tracking-wider">{{ $event->no_rekening }}</p>
+                                            @if ($event->nama_rekening)
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">a.n. {{ $event->nama_rekening }}</p>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                        Upload Bukti Pembayaran <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="file" name="bukti_pembayaran" accept="image/*,application/pdf" required
+                                        class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-amber-50 dark:file:bg-amber-900/30 file:text-amber-700 dark:file:text-amber-400 hover:file:bg-amber-100 transition">
+                                </div>
+                            </div>
+                        @else
+                            {{-- Tidak ada info pembayaran dikonfigurasi --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Upload Bukti Pembayaran <span class="text-red-500">*</span>
+                                </label>
+                                <input type="file" name="bukti_pembayaran" accept="image/*,application/pdf" required
+                                    class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-green-50 dark:file:bg-green-900/30 file:text-green-700 dark:file:text-green-400 hover:file:bg-green-100 transition">
+                            </div>
+                        @endif
                     @endif
 
-                    {{-- Infaq Section --}}
-                    <div class="border border-green-100 dark:border-green-900/50 bg-green-50 dark:bg-green-900/10 rounded-xl p-4 space-y-3">
-                        <div class="flex items-center gap-2 mb-1">
-                            <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
-                            <span class="text-sm font-semibold text-green-800 dark:text-green-300">Infaq Kajian (Opsional)</span>
-                        </div>
-
-                        <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 text-sm border border-green-100 dark:border-gray-700">
-                            <p class="text-gray-600 dark:text-gray-300 font-medium mb-0.5">Transfer ke:</p>
-                            <p class="text-gray-800 dark:text-gray-100 font-semibold">BCA Syariah</p>
-                            <p class="text-green-700 dark:text-green-400 font-bold text-base tracking-wider">0530051523</p>
-                            <p class="text-gray-500 dark:text-gray-400 text-xs">An. Suci IndraWati</p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Pilih nominal infaq:</p>
-                            <div class="grid grid-cols-2 gap-2" id="infaq-options">
-                                @foreach ([20000, 30000, 50000] as $nominal)
-                                    <button type="button" onclick="pilihInfaq({{ $nominal }}, this)"
-                                        class="infaq-btn border-2 border-gray-200 dark:border-gray-700 rounded-lg py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-green-500 hover:text-green-700 dark:hover:text-green-400 transition">
-                                        Rp {{ number_format($nominal, 0, ',', '.') }}
-                                    </button>
-                                @endforeach
-                                <button type="button" onclick="pilihInfaqLain(this)"
-                                    class="infaq-btn border-2 border-gray-200 dark:border-gray-700 rounded-lg py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-green-500 hover:text-green-700 dark:hover:text-green-400 transition">
-                                    Nominal Lain
-                                </button>
+                    {{-- Infaq Section — hanya untuk event GRATIS --}}
+                    @if ($event->metode_pembayaran === 'Gratis')
+                        <div class="border border-green-100 dark:border-green-900/50 bg-green-50 dark:bg-green-900/10 rounded-xl p-4 space-y-3">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                                <span class="text-sm font-semibold text-green-800 dark:text-green-300">Infaq Kajian (Opsional)</span>
                             </div>
-                            <input type="number" id="infaq-lain" name="infaq_nominal" placeholder="Masukkan nominal (Rp)"
-                                class="hidden mt-2 w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
-                        </div>
 
-                        <input type="hidden" name="infaq_is_custom" id="infaq-is-custom" value="0">
+                            {{-- Info rekening dari event (kalau diisi admin), kalau tidak diisi tidak tampil --}}
+                            @if ($event->nama_bank && $event->no_rekening)
+                                <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 text-sm border border-green-100 dark:border-gray-700">
+                                    <p class="text-gray-600 dark:text-gray-300 font-medium mb-0.5">Transfer ke:</p>
+                                    <p class="text-gray-800 dark:text-gray-100 font-semibold">{{ $event->nama_bank }}</p>
+                                    <p class="text-green-700 dark:text-green-400 font-bold text-base tracking-wider">{{ $event->no_rekening }}</p>
+                                    @if ($event->nama_rekening)
+                                        <p class="text-gray-500 dark:text-gray-400 text-xs">An. {{ $event->nama_rekening }}</p>
+                                    @endif
+                                </div>
+                            @endif
 
-                        <div id="bukti-infaq-wrap" class="hidden">
-                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                Upload bukti transfer infaq
-                                <span class="required-star text-red-500">*</span>
-                                <span class="optional-text text-gray-400">(opsional)</span>
-                            </label>
-                            <input type="file" name="bukti_infaq" id="bukti-infaq-input" accept="image/*,application/pdf"
-                                class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-green-50 dark:file:bg-green-900/30 file:text-green-700 dark:file:text-green-400 hover:file:bg-green-100 transition">
-                            @error('bukti_infaq')
-                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                            @enderror
+                            @if ($event->qris_image)
+                                <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-3 text-center border border-green-100 dark:border-gray-700">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">atau Scan QRIS</p>
+                                    <img src="{{ asset('storage/' . $event->qris_image) }}" alt="QRIS Infaq"
+                                        class="w-32 h-32 object-contain mx-auto rounded-lg bg-white p-1">
+                                </div>
+                            @endif
+
+                            <div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Pilih nominal infaq:</p>
+                                <div class="grid grid-cols-2 gap-2" id="infaq-options">
+                                    @foreach ([20000, 30000, 50000] as $nominal)
+                                        <button type="button" onclick="pilihInfaq({{ $nominal }}, this)"
+                                            class="infaq-btn border-2 border-gray-200 dark:border-gray-700 rounded-lg py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-green-500 hover:text-green-700 dark:hover:text-green-400 transition">
+                                            Rp {{ number_format($nominal, 0, ',', '.') }}
+                                        </button>
+                                    @endforeach
+                                    <button type="button" onclick="pilihInfaqLain(this)"
+                                        class="infaq-btn border-2 border-gray-200 dark:border-gray-700 rounded-lg py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-green-500 hover:text-green-700 dark:hover:text-green-400 transition">
+                                        Nominal Lain
+                                    </button>
+                                </div>
+                                <input type="number" id="infaq-lain" name="infaq_nominal" placeholder="Masukkan nominal (Rp)"
+                                    class="hidden mt-2 w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                            </div>
+
+                            <input type="hidden" name="infaq_is_custom" id="infaq-is-custom" value="0">
+
+                            <div id="bukti-infaq-wrap" class="hidden">
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    Upload bukti transfer infaq
+                                    <span class="required-star text-red-500">*</span>
+                                    <span class="optional-text text-gray-400">(opsional)</span>
+                                </label>
+                                <input type="file" name="bukti_infaq" id="bukti-infaq-input" accept="image/*,application/pdf"
+                                    class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-green-50 dark:file:bg-green-900/30 file:text-green-700 dark:file:text-green-400 hover:file:bg-green-100 transition">
+                                @error('bukti_infaq')
+                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <button type="submit"
                         class="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg text-sm font-semibold transition mt-2">
