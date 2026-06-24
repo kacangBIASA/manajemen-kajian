@@ -216,6 +216,7 @@ class EventController extends Controller
             'infaq_nominal' => $request->infaq_nominal ?? null,
             'bukti_infaq' => $buktiInfaqPath,
             'motivasi_kajian' => $request->motivasi_kajian ?? null,
+            'jenis_registrasi' => 'online',
         ]);
 
         return redirect()->route('tiket.show', $pendaftar->kode_qr);

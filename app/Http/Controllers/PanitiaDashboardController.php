@@ -89,6 +89,59 @@ class PanitiaDashboardController extends Controller
         ]);
     }
 
+    public function registrasiOffline($id)
+    {
+        $event = Event::findOrFail($id);
+        abort_unless(
+            auth()->user()->events()->where('event_id', $id)->exists(),
+            403,
+            'Anda tidak ditugaskan ke event ini.'
+        );
+        return view('panitia.registrasi-offline', compact('event'));
+    }
+
+    public function storeRegistrasiOffline(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+        abort_unless(
+            auth()->user()->events()->where('event_id', $id)->exists(),
+            403,
+            'Anda tidak ditugaskan ke event ini.'
+        );
+
+        $request->validate([
+            'nama'          => 'required|string|max:255',
+            'no_hp'         => 'required|string|max:20',
+            'infaq_nominal' => 'nullable|integer|min:0',
+        ]);
+
+        $existing = \App\Models\Pendaftaran::where('event_id', $id)
+            ->where('no_hp', $request->no_hp)
+            ->first();
+
+        if ($existing) {
+            return back()->withInput()->with('error', 'Nomor HP ini sudah terdaftar atas nama "' . $existing->nama . '" di event ini.');
+        }
+
+        $kodeQR = 'QR-' . strtoupper(substr(md5($request->no_hp . $id), 0, 8)) . '-' . $id;
+
+        \App\Models\Pendaftaran::create([
+            'event_id'         => $id,
+            'nama'             => $request->nama,
+            'alamat'           => '-',
+            'no_hp'            => $request->no_hp,
+            'kode_qr'          => $kodeQR,
+            'infaq_nominal'    => $request->infaq_nominal ?? null,
+            'jenis_registrasi' => 'ots',
+            'status'           => 'Hadir',
+            'scanned_by'       => auth()->id(),
+            'scanned_at'       => now(),
+        ]);
+
+        return redirect()->route('panitia.event.detail', $id)
+            ->with('success', $request->nama . ' berhasil diregistrasi dan dicatat sebagai Hadir.');
+    }
+
     public function infaqForm($id)
     {
         $event = Event::findOrFail($id);

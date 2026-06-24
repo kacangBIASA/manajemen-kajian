@@ -53,6 +53,8 @@ Route::middleware(['auth', 'role:panitia'])->group(function () {
     Route::get('/panitia/event/{id}', [\App\Http\Controllers\PanitiaDashboardController::class, 'detail'])->name('panitia.event.detail');
     Route::get('/panitia/event/{id}/scan', [\App\Http\Controllers\PanitiaDashboardController::class, 'scan'])->name('panitia.event.scan');
     Route::post('/panitia/scan/check', [\App\Http\Controllers\PanitiaDashboardController::class, 'checkScan'])->name('panitia.scan.check');
+    Route::get('/panitia/event/{id}/registrasi-offline', [\App\Http\Controllers\PanitiaDashboardController::class, 'registrasiOffline'])->name('panitia.event.registrasi-offline');
+    Route::post('/panitia/event/{id}/registrasi-offline', [\App\Http\Controllers\PanitiaDashboardController::class, 'storeRegistrasiOffline'])->name('panitia.event.registrasi-offline.store');
     Route::get('/panitia/event/{id}/infaq', [\App\Http\Controllers\PanitiaDashboardController::class, 'infaqForm'])->name('panitia.event.infaq');
     Route::post('/panitia/event/{id}/infaq', [\App\Http\Controllers\PanitiaDashboardController::class, 'storeInfaq'])->name('panitia.event.infaq.store');
 });

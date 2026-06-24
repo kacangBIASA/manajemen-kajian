@@ -147,6 +147,7 @@
                             <tr class="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">#</th>
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Nama</th>
+                                <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Registrasi</th>
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">No HP</th>
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Alamat</th>
                                 <th class="text-left px-4 py-3 font-semibold text-gray-500 dark:text-gray-400">Motivasi</th>
@@ -161,6 +162,13 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition">
                                     <td class="px-4 py-3 text-gray-400 dark:text-gray-500">{{ $i + 1 }}</td>
                                     <td class="px-4 py-3 font-medium text-gray-800 dark:text-gray-100">{{ $p->nama }}</td>
+                                    <td class="px-4 py-3">
+                                        @if ($p->jenis_registrasi === 'ots')
+                                            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">OTS</span>
+                                        @else
+                                            <span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">Online</span>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ $p->no_hp }}</td>
                                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-[160px] truncate">{{ $p->alamat }}</td>
                                     <td class="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-[160px]">

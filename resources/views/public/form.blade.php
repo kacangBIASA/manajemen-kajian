@@ -146,23 +146,32 @@
     </div>
 
     <script>
-        const PRESET_NOMINALS = [20000, 30000, 50000];
+        let activeBtn = null;
 
-        function highlightBtn(el) {
+        function resetInfaq() {
             document.querySelectorAll('.infaq-btn').forEach(b => {
                 b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
             });
-            el.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
+            const lain = document.getElementById('infaq-lain');
+            lain.classList.add('hidden');
+            lain.value = '';
+            const wrap = document.getElementById('bukti-infaq-wrap');
+            const fileInput = document.getElementById('bukti-infaq-input');
+            const flag = document.getElementById('infaq-is-custom');
+            wrap.classList.add('hidden');
+            fileInput.required = false;
+            fileInput.value = '';
+            flag.value = '0';
+            activeBtn = null;
         }
 
         function showBuktiInfaq(required) {
             const wrap = document.getElementById('bukti-infaq-wrap');
-            const input = document.getElementById('bukti-infaq-input');
+            const fileInput = document.getElementById('bukti-infaq-input');
             const flag = document.getElementById('infaq-is-custom');
             wrap.classList.remove('hidden');
-            input.required = required;
+            fileInput.required = required;
             flag.value = required ? '1' : '0';
-            // Update label wajib/opsional
             const star = wrap.querySelector('.required-star');
             const opt = wrap.querySelector('.optional-text');
             if (star) star.style.display = required ? 'inline' : 'none';
@@ -170,47 +179,56 @@
         }
 
         function pilihInfaq(nominal, el) {
-            highlightBtn(el);
+            if (activeBtn === el) { resetInfaq(); return; }
+            activeBtn = el;
+            document.querySelectorAll('.infaq-btn').forEach(b => {
+                b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
+            });
+            el.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
             const lain = document.getElementById('infaq-lain');
             lain.classList.add('hidden');
             lain.name = 'infaq_nominal';
             lain.value = nominal;
-            showBuktiInfaq(false); // muncul, tapi tidak wajib
+            showBuktiInfaq(false);
         }
 
         function pilihInfaqLain(el) {
-            highlightBtn(el);
+            if (activeBtn === el) { resetInfaq(); return; }
+            activeBtn = el;
+            document.querySelectorAll('.infaq-btn').forEach(b => {
+                b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
+            });
+            el.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
             const lain = document.getElementById('infaq-lain');
             lain.classList.remove('hidden');
             lain.name = 'infaq_nominal';
             lain.value = '';
             lain.focus();
-            showBuktiInfaq(true); // muncul + wajib
+            showBuktiInfaq(true);
         }
 
-        // Restore state jika validasi gagal (kembali ke halaman dengan old input)
+        // Restore state jika validasi gagal
         @if (old('infaq_nominal') || old('infaq_is_custom'))
             document.addEventListener('DOMContentLoaded', function () {
                 const isCustom = '{{ old('infaq_is_custom') }}' === '1';
                 const oldNominal = parseInt('{{ old('infaq_nominal') }}') || 0;
-
+                const btns = document.querySelectorAll('.infaq-btn');
                 if (isCustom) {
-                    // Nominal Lain — tampilkan input + bukti wajib
+                    activeBtn = btns[btns.length - 1];
+                    activeBtn.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
                     const lain = document.getElementById('infaq-lain');
                     lain.classList.remove('hidden');
                     lain.value = oldNominal || '';
                     showBuktiInfaq(true);
-                    const btns = document.querySelectorAll('.infaq-btn');
-                    btns[btns.length - 1].classList.add('border-green-500', 'text-green-700', 'bg-green-50');
                 } else if (oldNominal) {
-                    // Preset nominal — tampilkan bukti opsional, highlight tombol yang sesuai
-                    document.getElementById('infaq-lain').value = oldNominal;
-                    showBuktiInfaq(false);
-                    document.querySelectorAll('.infaq-btn').forEach(btn => {
-                        if (btn.textContent.replace(/\D/g, '') == String(oldNominal).replace(/\D/g, '')) {
+                    btns.forEach(btn => {
+                        if (btn.textContent.replace(/\D/g, '') == String(oldNominal)) {
+                            activeBtn = btn;
                             btn.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
                         }
                     });
+                    document.getElementById('infaq-lain').value = oldNominal;
+                    showBuktiInfaq(false);
                 }
             });
         @endif

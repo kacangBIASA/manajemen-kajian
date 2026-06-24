@@ -33,6 +33,13 @@
                 </svg>
                 Scan QR Absensi
             </a>
+            <a href="{{ route('panitia.event.registrasi-offline', $event->id) }}"
+                class="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-teal-500 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 text-sm font-semibold px-4 py-2.5 rounded-lg transition">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+                Registrasi Offline
+            </a>
         </div>
 
         {{-- Stat cards --}}
@@ -85,7 +92,12 @@
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition"
                                 x-show="filter === 'semua' || (filter === 'hadir' && '{{ $p->status }}' === 'Hadir') || (filter === 'belum' && '{{ $p->status }}' !== 'Hadir')">
                                 <td class="px-5 py-3 text-gray-400 dark:text-gray-500">{{ $index + 1 }}</td>
-                                <td class="px-5 py-3 font-medium text-gray-800 dark:text-gray-100">{{ $p->nama }}</td>
+                                <td class="px-5 py-3 font-medium text-gray-800 dark:text-gray-100">
+                                    {{ $p->nama }}
+                                    @if ($p->jenis_registrasi === 'ots')
+                                        <span class="ml-1 text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-1.5 py-0.5 rounded font-medium">OTS</span>
+                                    @endif
+                                </td>
                                 <td class="px-5 py-3 text-gray-500 dark:text-gray-400">{{ $p->no_hp }}</td>
                                 <td class="px-5 py-3">
                                     @if ($p->status === 'Hadir')
