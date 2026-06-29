@@ -167,20 +167,15 @@
 
                             <div>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Pilih nominal infaq:</p>
-                                <div class="grid grid-cols-2 gap-2" id="infaq-options">
+                                <div class="grid grid-cols-3 gap-2" id="infaq-options">
                                     @foreach ([20000, 30000, 50000] as $nominal)
                                         <button type="button" onclick="pilihInfaq({{ $nominal }}, this)"
                                             class="infaq-btn border-2 border-gray-200 dark:border-gray-700 rounded-lg py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-green-500 hover:text-green-700 dark:hover:text-green-400 transition">
                                             Rp {{ number_format($nominal, 0, ',', '.') }}
                                         </button>
                                     @endforeach
-                                    <button type="button" onclick="pilihInfaqLain(this)"
-                                        class="infaq-btn border-2 border-gray-200 dark:border-gray-700 rounded-lg py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-green-500 hover:text-green-700 dark:hover:text-green-400 transition">
-                                        Nominal Lain
-                                    </button>
                                 </div>
-                                <input type="number" id="infaq-lain" name="infaq_nominal" placeholder="Masukkan nominal (Rp)"
-                                    class="hidden mt-2 w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition">
+                                <input type="hidden" id="infaq-lain" name="infaq_nominal" value="">
                             </div>
 
                             <input type="hidden" name="infaq_is_custom" id="infaq-is-custom" value="0">
@@ -216,30 +211,14 @@
             document.querySelectorAll('.infaq-btn').forEach(b => {
                 b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
             });
-            const lain = document.getElementById('infaq-lain');
-            lain.classList.add('hidden');
-            lain.value = '';
+            document.getElementById('infaq-lain').value = '';
             const wrap = document.getElementById('bukti-infaq-wrap');
             const fileInput = document.getElementById('bukti-infaq-input');
-            const flag = document.getElementById('infaq-is-custom');
             wrap.classList.add('hidden');
             fileInput.required = false;
             fileInput.value = '';
-            flag.value = '0';
+            document.getElementById('infaq-is-custom').value = '0';
             activeBtn = null;
-        }
-
-        function showBuktiInfaq(required) {
-            const wrap = document.getElementById('bukti-infaq-wrap');
-            const fileInput = document.getElementById('bukti-infaq-input');
-            const flag = document.getElementById('infaq-is-custom');
-            wrap.classList.remove('hidden');
-            fileInput.required = required;
-            flag.value = required ? '1' : '0';
-            const star = wrap.querySelector('.required-star');
-            const opt = wrap.querySelector('.optional-text');
-            if (star) star.style.display = required ? 'inline' : 'none';
-            if (opt) opt.style.display = required ? 'none' : 'inline';
         }
 
         function pilihInfaq(nominal, el) {
@@ -249,50 +228,26 @@
                 b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
             });
             el.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
-            const lain = document.getElementById('infaq-lain');
-            lain.classList.add('hidden');
-            lain.name = 'infaq_nominal';
-            lain.value = nominal;
-            showBuktiInfaq(false);
-        }
-
-        function pilihInfaqLain(el) {
-            if (activeBtn === el) { resetInfaq(); return; }
-            activeBtn = el;
-            document.querySelectorAll('.infaq-btn').forEach(b => {
-                b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
-            });
-            el.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'dark:bg-green-900/20');
-            const lain = document.getElementById('infaq-lain');
-            lain.classList.remove('hidden');
-            lain.name = 'infaq_nominal';
-            lain.value = '';
-            lain.focus();
-            showBuktiInfaq(true);
+            document.getElementById('infaq-lain').value = nominal;
+            const wrap = document.getElementById('bukti-infaq-wrap');
+            const star = wrap.querySelector('.required-star');
+            const opt = wrap.querySelector('.optional-text');
+            wrap.classList.remove('hidden');
+            document.getElementById('bukti-infaq-input').required = false;
+            if (star) star.style.display = 'none';
+            if (opt) opt.style.display = 'inline';
         }
 
         // Restore state jika validasi gagal
-        @if (old('infaq_nominal') || old('infaq_is_custom'))
+        @if (old('infaq_nominal'))
             document.addEventListener('DOMContentLoaded', function () {
-                const isCustom = '{{ old('infaq_is_custom') }}' === '1';
                 const oldNominal = parseInt('{{ old('infaq_nominal') }}') || 0;
-                const btns = document.querySelectorAll('.infaq-btn');
-                if (isCustom) {
-                    activeBtn = btns[btns.length - 1];
-                    activeBtn.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
-                    const lain = document.getElementById('infaq-lain');
-                    lain.classList.remove('hidden');
-                    lain.value = oldNominal || '';
-                    showBuktiInfaq(true);
-                } else if (oldNominal) {
-                    btns.forEach(btn => {
+                if (oldNominal) {
+                    document.querySelectorAll('.infaq-btn').forEach(btn => {
                         if (btn.textContent.replace(/\D/g, '') == String(oldNominal)) {
-                            activeBtn = btn;
-                            btn.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
+                            pilihInfaq(oldNominal, btn);
                         }
                     });
-                    document.getElementById('infaq-lain').value = oldNominal;
-                    showBuktiInfaq(false);
                 }
             });
         @endif
