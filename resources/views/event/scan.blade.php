@@ -70,28 +70,20 @@
         }
 
         function startCamera() {
-            Html5Qrcode.getCameras().then(cameras => {
-                if (!cameras.length) {
-                    Swal.fire({ icon: 'error', title: 'Kamera tidak ditemukan', confirmButtonColor: '#16a34a' });
-                    return;
-                }
-                scanner.start(
-                    cameras[0].id,
-                    { fps: 10, qrbox: { width: 250, height: 250 } },
-                    qrCodeMessage => { sendScanResult(qrCodeMessage); }
-                ).then(() => {
-                    cameraOn = true;
-                    document.getElementById('camera-off').classList.add('hidden');
-                    document.getElementById('reader').classList.remove('hidden');
-                    document.getElementById('status-indicator').classList.remove('hidden');
-                    document.getElementById('btn-label').textContent = 'Matikan Kamera';
-                    document.getElementById('btn-icon-on').classList.add('hidden');
-                    document.getElementById('btn-icon-off').classList.remove('hidden');
-                    document.getElementById('toggle-btn').classList.replace('bg-green-600', 'bg-red-500');
-                    document.getElementById('toggle-btn').classList.replace('hover:bg-green-700', 'hover:bg-red-600');
-                }).catch(err => {
-                    Swal.fire({ icon: 'error', title: 'Gagal mengakses kamera', text: 'Pastikan izin kamera sudah diberikan.', confirmButtonColor: '#16a34a' });
-                });
+            scanner.start(
+                { facingMode: { ideal: "environment" } },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                qrCodeMessage => { sendScanResult(qrCodeMessage); }
+            ).then(() => {
+                cameraOn = true;
+                document.getElementById('camera-off').classList.add('hidden');
+                document.getElementById('reader').classList.remove('hidden');
+                document.getElementById('status-indicator').classList.remove('hidden');
+                document.getElementById('btn-label').textContent = 'Matikan Kamera';
+                document.getElementById('btn-icon-on').classList.add('hidden');
+                document.getElementById('btn-icon-off').classList.remove('hidden');
+                document.getElementById('toggle-btn').classList.replace('bg-green-600', 'bg-red-500');
+                document.getElementById('toggle-btn').classList.replace('hover:bg-green-700', 'hover:bg-red-600');
             }).catch(() => {
                 Swal.fire({ icon: 'error', title: 'Gagal mengakses kamera', text: 'Pastikan izin kamera sudah diberikan.', confirmButtonColor: '#16a34a' });
             });

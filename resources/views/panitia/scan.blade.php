@@ -95,13 +95,8 @@
         }
 
         function startCamera() {
-            Html5Qrcode.getCameras().then(cameras => {
-                if (!cameras.length) {
-                    Swal.fire({ icon: 'error', title: 'Kamera tidak ditemukan', confirmButtonColor: '#0d9488' });
-                    return;
-                }
-                scanner.start(
-                    cameras[0].id,
+            scanner.start(
+                    { facingMode: { ideal: "environment" } },
                     { fps: 10, qrbox: { width: 250, height: 250 } },
                     qrCodeMessage => { sendScanResult(qrCodeMessage); }
                 ).then(() => {
@@ -117,9 +112,6 @@
                 }).catch(() => {
                     Swal.fire({ icon: 'error', title: 'Gagal mengakses kamera', text: 'Pastikan izin kamera sudah diberikan.', confirmButtonColor: '#0d9488' });
                 });
-            }).catch(() => {
-                Swal.fire({ icon: 'error', title: 'Gagal mengakses kamera', text: 'Pastikan izin kamera sudah diberikan.', confirmButtonColor: '#0d9488' });
-            });
         }
 
         function stopCamera() {
